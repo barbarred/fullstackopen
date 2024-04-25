@@ -2,6 +2,7 @@ import {useState} from 'react'
 import './App.css'
 
 
+// eslint-disable-next-line react/prop-types
 const Button = ({change}) => {
     return(
       <button onClick={change}>next anectode</button>
@@ -26,6 +27,7 @@ function App() {
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState([...points])
 
+
   const handleNext = () => {
     let randomAnectode = Math.floor(Math.random() * 8)
     setSelected(randomAnectode)
@@ -34,14 +36,35 @@ function App() {
     const votesCopy = [...votes]
     votesCopy[selected] += 1
     setVotes(votesCopy)
+
+  }
+
+  const anectodeMostVoted = () => {   
+    let arr = [...votes]
+    let maxVoted = arr.reduce(function (a, b) {
+      return Math.max(a, b)
+    }, -Infinity)
+
+    let anectodeWinner = arr.findIndex((v) => v === maxVoted)
+
+    if(maxVoted === 0) return
+    return (
+      <div>
+      <h2>Anecdote with most votes</h2>
+      <p>{anectodes[anectodeWinner]} <br /><br /> has {maxVoted}  votes</p>
+      </div> 
+    )
   }
   return (
     <>
       <div>
         {anectodes[selected]}
         <p>has {votes[selected]} votes</p>
-        <Button change={handleNext}/>
         <button onClick={handleVote}>vote</button>
+        <Button change={handleNext}/>
+        <div>
+          {anectodeMostVoted()}
+        </div>
       </div>
     </>
   )
