@@ -12,11 +12,20 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
-    const newObject = {
-      name: newName,
+    if(newName === '') return
+    function nameCheck(persons, check) {
+      return persons.find(obj => obj.name === check) !== undefined
     }
-    setPersons(persons.concat(newObject))
-    setNewName('')
+
+    if(nameCheck(persons, newName)){
+      alert(`${newName} is already added to phonebook`)
+    }else{
+      const newObject = {
+      name: newName,
+      }
+      setPersons(persons.concat(newObject))
+      setNewName('')
+    }
   }
 
   return (
@@ -34,7 +43,7 @@ const App = () => {
         <ul>
           {
             persons.map(person => 
-            <p key={Math.random()}>{person.name}</p>
+            <p key={person.name}>{person.name}</p>
             )
           }
         </ul>        
