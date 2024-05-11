@@ -3,7 +3,6 @@ import {Filter} from './components/Filter.jsx'
 import {PersonForm} from './components/PersonForm.jsx'
 import {Persons} from './components/Persons.jsx'
 import servicesPersons from './services/persons.jsx'
-import axios from 'axios'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -34,25 +33,27 @@ const App = () => {
   const addNumber = (event) => {
     event.preventDefault()
     if(newName === '' || newNumber === '') return
+
     function nameCheck(persons, check) {
       return persons.find(obj => obj.name === check) !== undefined
     }
 
     if(nameCheck(persons, newName)){
-      
-    const personUpdated = {
+      if(!(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`))) return
+      const personUpdated = {
       name: newName,
       number: newNumber
-    }
-    const person = filterResult.find(per => per.name === newName)
-    const id = person.id
+      }
+      const person = filterResult.find(per => per.name === newName)
+      const id = person.id
 
-    axios.put(`http://localhost:3001/persons/${id}`, personUpdated)
-    .then(response => {
-      setPersons(filterResult.map(pers => pers.id !== id ? pers : response.data))
-      setNewName('')
-      setNewNumber('')
-    })
+      servicesPersons
+      .updatePerson(id, personUpdated)
+      .then(response => {
+        setPersons(filterResult.map(pers => pers.id !== id ? pers : response.data))
+        setNewName('')
+        setNewNumber('')
+      })
     
     }else{
       const newObject = {
