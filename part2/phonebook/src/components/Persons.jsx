@@ -4,12 +4,14 @@ import servicesPersons from '../services/persons.jsx'
 export const Persons = ({filterResult, setPersons}) => {
 
     const handleRemoveOf = (id) => {
-      servicesPersons
-      .deletePerson(id)
-      .then(response => {
-        window.confirm(`delete ${response.data.name}`)
-        setPersons(filterResult.filter(per => per.id !== response.data.id))
-      })
+      if(window.confirm(`delete ${id}`)){
+        servicesPersons
+        .deletePerson(id)
+        .then(response => {
+          setPersons(filterResult.filter(per => per.id !== response.data.id))
+        })
+        return
+      }
     }
     return(
         <div>
