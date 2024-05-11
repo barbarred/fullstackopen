@@ -1,18 +1,16 @@
-import axios from 'axios'
 import { ButtonDelete } from './ButtonDelete.jsx'
+import servicesPersons from '../services/persons.jsx'
 
 export const Persons = ({filterResult, setPersons}) => {
 
     const handleRemoveOf = (id) => {
-
-      axios.delete(`http://localhost:3001/persons/${id}`)
+      servicesPersons
+      .deletePerson(id)
       .then(response => {
         window.confirm(`delete ${response.data.name}`)
         setPersons(filterResult.filter(per => per.id !== response.data.id))
-        
       })
     }
-
     return(
         <div>
             <ul>

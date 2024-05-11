@@ -3,6 +3,7 @@ import {Filter} from './components/Filter.jsx'
 import {PersonForm} from './components/PersonForm.jsx'
 import {Persons} from './components/Persons.jsx'
 import servicesPersons from './services/persons.jsx'
+import axios from 'axios'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -10,6 +11,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newfilter, setFilter] = useState('')
 
+  let filterResult = persons.filter(person => person.name.toLowerCase().includes(newfilter.toLowerCase())) 
+  
   useEffect(()=>{
       servicesPersons
       .getPersons()
@@ -28,19 +31,29 @@ const App = () => {
     setFilter(event.target.value)
   }
   
-  const filterResult = persons.filter(person => person.name.toLowerCase().includes(newfilter.toLowerCase())) 
-
   const addNumber = (event) => {
     event.preventDefault()
     if(newName === '' || newNumber === '') return
     function nameCheck(persons, check) {
       return persons.find(obj => obj.name === check) !== undefined
     }
-    function numberCheck(persons, numCheck){
-        return persons.find(objN => objN.number === numCheck) !== undefined
-      }
-    if(nameCheck(persons, newName) || numberCheck(persons, newNumber)){
-      alert(`The name: ${newName} or the number: ${newNumber} is already added to phonebook`)
+
+    if(nameCheck(persons, newName)){
+      
+    const personUpdated = {
+      name: newName,
+      number: newNumber
+    }
+    const person = filterResult.find(per => per.name === newName)
+    const id = person.id
+
+    axios.put(`http://localhost:3001/persons/${id}`, personUpdated)
+    .then(response => {
+      setPersons(filterResult.map(pers => pers.id !== id ? pers : response.data))
+      setNewName('')
+      setNewNumber('')
+    })
+    
     }else{
       const newObject = {
       name: newName,
