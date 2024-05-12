@@ -3,12 +3,16 @@ import {Filter} from './components/Filter.jsx'
 import {PersonForm} from './components/PersonForm.jsx'
 import {Persons} from './components/Persons.jsx'
 import servicesPersons from './services/persons.jsx'
+import { NotificationSuccess } from './components/NotificationSuccess.jsx'
+import { NotificationError } from './components/NotificationError.jsx'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newfilter, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   let filterResult = persons.filter(person => person.name.toLowerCase().includes(newfilter.toLowerCase())) 
   
@@ -54,6 +58,12 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
+      .catch(()=>{
+        setErrorMessage(`Information of ${newName} has already been removed from server`)
+      })
+      setTimeout(()=>{
+        setErrorMessage(null)
+      }, 4000)
     
     }else{
       const newObject = {
@@ -64,6 +74,10 @@ const App = () => {
       .addPerson(newObject)
       .then(response => {
         setPersons(persons.concat(response.data))
+        setSuccessMessage(`Added ${newName}`)
+        setTimeout(()=>{
+          setSuccessMessage(null)
+        }, 4000)
         setNewName('')
         setNewNumber('')
       })
@@ -73,6 +87,9 @@ const App = () => {
   return (
     <div style={{padding:'10px'}}>
       <h2>Phonebook</h2>
+
+      <NotificationSuccess message={successMessage}/>
+      <NotificationError errorMessage={errorMessage} />
 
       <Filter newfilter={newfilter} handleFilter={handleFilter}/>
 
