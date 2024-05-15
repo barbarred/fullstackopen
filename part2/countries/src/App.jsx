@@ -14,24 +14,28 @@ const FullList = ({country, value}) => {
       <>
       <ul>
         {country.map(cont =>
-          <li>{cont.name.common}</li>
+          <li key={cont.name.common}>{cont.name.common}</li>
         )}
       </ul>
-      <p>mas de 2</p>
       </>
     )
   }else{
 
-  const languages = country.map(len => len.languages)
-  const len = languages[0]
-  console.log(len)
-
   return(
     <>
     {country.map(cont =>
-      <div>
-        <p>{cont.name.common}</p>
+      <div key={cont.name.common}>
+        <h1>{cont.name.common}</h1>
+        <p>{cont.capital[0]}</p>
+        <p>{cont.area}</p>
+        <p style={{fontWeight:'bold'}}>languages:</p>
+        <ul>
+        {
+          Object.values(cont.languages).toString()
+        }
+        </ul>
         <img src={cont.flags.png} alt="" />
+
       </div>
     )}
     </>
@@ -56,8 +60,9 @@ function App() {
 
   
   const handleChange = (event) => {
-    setValue(event.target.value)
-    const countryDetails = countries.filter(count => count.name.common.toLowerCase().startsWith(value.toLowerCase()))
+    let lastValue = event.target.value
+    setValue(lastValue)
+    const countryDetails = countries.filter(count => count.name.common.toLowerCase().includes(value.toLowerCase()))
     if(value === '') return
     setCountry(countryDetails)
   }
@@ -65,7 +70,6 @@ function App() {
 
   return (
     <>
-      <h1>Countries</h1>
         find countries <input value={value} onChange={handleChange}/>
       <div>
         {
