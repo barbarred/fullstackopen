@@ -1,40 +1,62 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
+const FullList = ({country}) => {
+  
+  console.log(country.length)
+  
+  if(country.length > 10){
+    return(
+      <p>Too many matches, specify another filter</p>
+    )
+  }else if(country.length > 2){
+    return(
+      <>
+      <p>{country.map(cont => cont.name.common)}</p>
+      <p>mas de 2</p>
+      </>
+    )
+  }else{
+  return(
+    <p>{country.map(cont => cont.name.common)}</p>
+
+  )
+  }
+
+  
+}
+
+
 function App() {
-  const [country, setCountries] = useState('')
+  const [countries, setCountries] = useState([])
+  const [country, setCountry] = useState([])
   const [value, setValue] = useState('')
-  const [result, setResult] = useState({})
 
   useEffect(()=>{
-    if(!country) return
-    axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${country}`)
+    axios.get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
       .then(response => {
-        console.log(response.data.name.common)
-        setResult(response.data)
+        const countries = response.data
+        setCountries(countries)
       })
-  },[country])
+  },[])
 
+  
   const handleChange = (event) => {
     setValue(event.target.value)
+    const countryDetails = countries.filter(count => count.name.common.toLowerCase().startsWith(value.toLowerCase()))
+    
+    setCountry(countryDetails)
   }
 
-  const onSearch = (event) => {
-    event.preventDefault()
-    setCountries(value)
-  }
-  console.log(result.area)
 
   return (
     <>
       <h1>Countries</h1>
-      <form onSubmit={onSearch}>
         find countries <input value={value} onChange={handleChange}/>
-        <button type="submit">buscar</button>
-      </form>
       <div>
-       {country}
-       {result.area}
+        {
+          <FullList country={country}/>
+        }
       </div>
     </>
   )
