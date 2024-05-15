@@ -1,28 +1,42 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-const FullList = ({country}) => {
+const FullList = ({country, value}) => {
   
-  console.log(country.length)
-  
+  if(value === '') return
+
   if(country.length > 10){
     return(
       <p>Too many matches, specify another filter</p>
     )
-  }else if(country.length > 2){
+  }else if(country.length > 1){
     return(
       <>
-      <p>{country.map(cont => cont.name.common)}</p>
+      <ul>
+        {country.map(cont =>
+          <li>{cont.name.common}</li>
+        )}
+      </ul>
       <p>mas de 2</p>
       </>
     )
   }else{
-  return(
-    <p>{country.map(cont => cont.name.common)}</p>
 
+  const languages = country.map(len => len.languages)
+  const len = languages[0]
+  console.log(len)
+
+  return(
+    <>
+    {country.map(cont =>
+      <div>
+        <p>{cont.name.common}</p>
+        <img src={cont.flags.png} alt="" />
+      </div>
+    )}
+    </>
   )
   }
-
   
 }
 
@@ -44,7 +58,7 @@ function App() {
   const handleChange = (event) => {
     setValue(event.target.value)
     const countryDetails = countries.filter(count => count.name.common.toLowerCase().startsWith(value.toLowerCase()))
-    
+    if(value === '') return
     setCountry(countryDetails)
   }
 
@@ -55,7 +69,7 @@ function App() {
         find countries <input value={value} onChange={handleChange}/>
       <div>
         {
-          <FullList country={country}/>
+          <FullList country={country} value={value}/>
         }
       </div>
     </>
