@@ -1,49 +1,59 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-const FullList = ({country, value}) => {
-  
+
+const FullListView = ({country, value}) => {
   if(value === '') return
 
   if(country.length > 10){
-    return(
+    return (
       <p>Too many matches, specify another filter</p>
     )
-  }else if(country.length > 1){
+  }
+}
+
+const ListView = ({country, value}) => {
+  if(value === '') return
+
+
+  if(country.length > 1 && country.length < 10 ){
     return(
       <>
       <ul>
         {country.map(cont =>
-          <li key={cont.name.common}>{cont.name.common}</li>
+          <li key={cont.name.common}>{cont.name.common} <button>show</button> </li>
         )}
       </ul>
       </>
     )
-  }else{
-
-  return(
-    <>
-    {country.map(cont =>
-      <div key={cont.name.common}>
-        <h1>{cont.name.common}</h1>
-        <p>{cont.capital[0]}</p>
-        <p>{cont.area}</p>
-        <p style={{fontWeight:'bold'}}>languages:</p>
-        <ul>
-        {
-          Object.values(cont.languages).map(value => <li>{value}</li> )
-        }
-        </ul>
-        <img src={cont.flags.png} alt="" />
-
-      </div>
-    )}
-    </>
-  )
   }
-  
 }
 
+const CountryView = ({country, value}) => {
+  if(value === '') return
+
+  if(country.length === 1){
+    return(
+      <>
+      {country.map(cont =>
+        <div key={cont.name.common}>
+          <h1>{cont.name.common}</h1>
+          <p>{cont.capital[0]}</p>
+          <p>{cont.area}</p>
+          <p style={{fontWeight:'bold'}}>languages:</p>
+          <ul>
+          {
+            Object.values(cont.languages).map(value => <li>{value}</li> )
+          }
+          </ul>
+          <img src={cont.flags.png} alt="" />
+
+        </div>
+      )}
+    </>
+    )
+  }
+}
 
 function App() {
   const [countries, setCountries] = useState([])
@@ -73,7 +83,11 @@ function App() {
         find countries <input value={value} onChange={handleChange}/>
       <div>
         {
-          <FullList country={country} value={value}/>
+          <>
+          <FullListView country={country} value={value}/>
+          <ListView country={country} value={value}/>
+          <CountryView country={country} value={value}/>
+          </>
         }
       </div>
     </>
