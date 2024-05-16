@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
+
 const FullList = ({country, value}) => {
   
   if(value === '') return
@@ -31,7 +32,7 @@ const FullList = ({country, value}) => {
         <p style={{fontWeight:'bold'}}>languages:</p>
         <ul>
         {
-          Object.values(cont.languages).toString()
+          Object.values(cont.languages).map(value => <li>{value}</li> )
         }
         </ul>
         <img src={cont.flags.png} alt="" />
