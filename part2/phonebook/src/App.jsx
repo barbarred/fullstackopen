@@ -14,8 +14,6 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
 
-  let filterResult = persons.filter(person => person.name.toLowerCase().includes(newfilter.toLowerCase())) 
-  
   useEffect(()=>{
       servicesPersons
       .getPersons()
@@ -23,6 +21,8 @@ const App = () => {
         setPersons(response.data)
       })
     },[])
+  
+  let filterResult = persons.filter(person => person.personName.toLowerCase().includes(newfilter.toLowerCase())) 
 
   const handleChange = (event) => {
     setNewName(event.target.value)
@@ -39,16 +39,16 @@ const App = () => {
     if(newName === '' || newNumber === '') return
 
     function nameCheck(persons, check) {
-      return persons.find(obj => obj.name === check) !== undefined
+      return persons.find(obj => obj.personName === check) !== undefined
     }
 
     if(nameCheck(persons, newName)){
       if(!(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`))) return
       const personUpdated = {
-      name: newName,
+      personName: newName,
       number: newNumber
       }
-      const person = filterResult.find(per => per.name === newName)
+      const person = filterResult.find(per => per.personName === newName)
       const id = person.id
 
       servicesPersons
@@ -67,7 +67,7 @@ const App = () => {
     
     }else{
       const newObject = {
-      name: newName,
+      personName: newName,
       number: newNumber,
       }
       servicesPersons

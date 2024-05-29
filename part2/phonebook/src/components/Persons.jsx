@@ -3,8 +3,8 @@ import servicesPersons from '../services/persons.jsx'
 
 export const Persons = ({filterResult, setPersons}) => {
 
-    const handleRemoveOf = (id, person) => {
-      if(window.confirm(`delete ${person}`)){
+    const handleRemoveOf = (id, personName) => {
+      if(window.confirm(`delete ${personName}`)){
         servicesPersons
         .deletePerson(id)
         .then(response => {
@@ -18,7 +18,7 @@ export const Persons = ({filterResult, setPersons}) => {
             <ul>
             {
             filterResult.map(person => 
-                <p key={Math.random()}>{person.name} {person.number} <ButtonDelete id={person.id} handleRemove={()=>handleRemoveOf(person.id, person.name)}/> </p>
+                <p key={Math.random()}>{person.personName} {person.number} <ButtonDelete id={person.id} handleRemove={()=>handleRemoveOf(person.id, person.personName)}/> </p>
             )
             }
             </ul>        
