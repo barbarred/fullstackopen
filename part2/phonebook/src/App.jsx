@@ -99,7 +99,7 @@ const App = () => {
        
       <h2>Numbers</h2>
       
-      <Persons filterResult={filterResult} setPersons={setPersons}/>
+      <Persons filterResult={filterResult} setPersons={setPersons} setErrorMessage={setErrorMessage}/>
     </div>
   )
 }
