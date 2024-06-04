@@ -1,0 +1,13 @@
+### gets blogs entries
+GET http://localhost:3003/api/blogs
+
+### create blog entrie
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "blog rorridev",
+  "author": "barbarred",
+  "url": "https://github.com/barbarred",
+  "likes": 37
+}
