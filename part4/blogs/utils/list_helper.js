@@ -29,12 +29,48 @@ const favoriteBlog = (blogs) => {
       moreLikes = blogs[i]
     }
   }
-  return(moreLikes.likes)
+  return {
+    title: moreLikes.title,
+    author: moreLikes.author,
+    likes: moreLikes.likes
+  }
+}
+
+const mostBlogs = (blogs) => {
+  const countAuthorBlog = blogs.reduce((act, blog) => {
+    act[blog.author] = (act[blog.author] || 0) + 1
+    return act
+  }, {})
+
+  const authorWithMostBlogs = Object.keys(countAuthorBlog).reduce((a, b) => {
+    return countAuthorBlog[a] > countAuthorBlog[b] ? a : b
+  })
+
+  return {
+    author: authorWithMostBlogs,
+    blogs: countAuthorBlog[authorWithMostBlogs]
+  }
 
 }
 
+const mostLikes = (blogs) => {
+  const likesCount = blogs.reduce((act, blog) => {
+    act[blog.author] = (act[blog.author] || 0) + blog.likes
+    return act
+  }, {})
+  const authorWithMoreLikes = Object.keys(likesCount).reduce((a, b) => {
+    return likesCount[a] > likesCount[b] ? a : b
+  })
+
+  return {
+    author: authorWithMoreLikes,
+    likes: likesCount[authorWithMoreLikes]
+  }
+}
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs,
+  mostLikes
 }
