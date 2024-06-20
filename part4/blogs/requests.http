@@ -6,8 +6,21 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "another entrie for testing",
-  "author": "rorridev",
+  "title": "one entrie without like key",
+  "author": "rorri",
+  "url": "https://github.com/barbarred"
+}
+
+### delete a blog entrie
+DELETE http://localhost:3003/api/blogs/66745e00937cd11b1f4961ac
+
+### update a entrie blog
+PUT http://localhost:3003/api/blogs/66746c2fe27810bd54ca089c
+Content-Type: application/json
+
+{
+  "title": "one entrie without like key",
+  "author": "rorri",
   "url": "https://github.com/barbarred",
-  "likes": 33
+  "likes": 44
 }
