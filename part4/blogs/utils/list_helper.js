@@ -1,4 +1,5 @@
 const logger = require('../utils/logger.js')
+const User = require('../models/users.js')
 
 const dummy = (blogs) => {
   if(blogs.length > 1){
@@ -67,10 +68,17 @@ const mostLikes = (blogs) => {
     likes: likesCount[authorWithMoreLikes]
   }
 }
+
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
-  mostLikes
+  mostLikes,
+  usersInDb
 }

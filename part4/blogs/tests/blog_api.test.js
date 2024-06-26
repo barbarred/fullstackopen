@@ -1,9 +1,12 @@
 const { test, after, beforeEach, describe } = require('node:test')
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog.js')
+const User = require('../models/users.js')
 const assert = require('assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const list_helper = require('../utils/list_helper.js')
 
 const api = supertest(app)
 
@@ -127,6 +130,36 @@ describe('Delete and Update one entrie of the object blogs', () => {
 
 })
 
+describe('when there is initially one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({username: 'root', passwordHash})
+    await user.save()
+  })
+
+  test('creation a a new user', async () => {
+    const userAtStart = await list_helper.usersInDb()
+
+    const newUser = {
+      username: 'rorridev',
+      name: 'Ricardo',
+      password: '13081707'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const userAtEnd = await list_helper.usersInDb()
+    assert.strictEqual(userAtEnd.length, userAtStart.length + 1)
+
+    const usernames = userAtEnd.map(u => u.username)
+    assert(usernames.includes(newUser.username))
+  })
+})
 
 after(async () => {
   await mongoose.connection.close()
