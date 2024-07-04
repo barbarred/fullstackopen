@@ -159,6 +159,23 @@ describe('when there is initially one user in db', () => {
     const usernames = userAtEnd.map(u => u.username)
     assert(usernames.includes(newUser.username))
   })
+
+})
+
+describe('creating not valid user', () => {
+  test('creation not valid user', async () => {
+  
+    const newUser = {
+      username: 'rorridev',
+      name: 'Ricardo',
+      password: '13081707'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+  })
 })
 
 after(async () => {
