@@ -4,7 +4,7 @@
   "description": "project for the exercises of part 4 of the fullstackopen course",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test node --test",
+    "test": "NODE_ENV=test node --test --test-concurrency=1",
     "dev": "NODE_ENV=development nodemon index.js",
     "devtest": "NODE_ENV=test nodemon index.js"
   },

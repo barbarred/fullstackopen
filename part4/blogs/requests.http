@@ -2,13 +2,15 @@
 GET http://localhost:3003/api/blogs
 
 ### create blog entrie
-POST http://localhost:3003/api/users
+POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "username": "rasta",
-  "name": "Ricardo",
-  "password": "13081707"
+  "title": "another blog with user",
+  "author": "pedro",
+  "url": "https://github.com/barbarred",
+  "likes": 23,
+  "userId": "668856f872333774fcfd574b"
 }
 
 ### delete a blog entrie

@@ -159,14 +159,10 @@ describe('when there is initially one user in db', () => {
     const usernames = userAtEnd.map(u => u.username)
     assert(usernames.includes(newUser.username))
   })
-
-})
-
-describe('creating not valid user', () => {
   test('creation not valid user', async () => {
   
     const newUser = {
-      username: 'rorridev',
+      username: 'root',
       name: 'Ricardo',
       password: '13081707'
     }
@@ -176,7 +172,9 @@ describe('creating not valid user', () => {
       .send(newUser)
       .expect(400)
   })
+
 })
+
 
 after(async () => {
   await mongoose.connection.close()
