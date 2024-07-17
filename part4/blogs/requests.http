@@ -4,17 +4,17 @@ GET http://localhost:3003/api/blogs
 ### create blog entrie
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlZHJvZGV2IiwiaWQiOiI2Njg4NTZmODcyMzMzNzc0ZmNmZDU3NGIiLCJpYXQiOjE3MjEwNjY0OTd9.UuOWEDnB1t3uj6EVP5pW3vMwcGRjhAJvLRZlfXoZwiY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvcnJpIiwiaWQiOiI2Njg4NTRiZjk4M2U4Y2M4ZDAzMjVlNTQiLCJpYXQiOjE3MjEyMzU0NDh9.8aC1aeT4aGsYRQjUXAO_okGoiCRw439aQ6sh7Rz4GBc
 
 {
-  "title": "another more blog from pedrodev with your token",
+  "title": "another more blog with token for testing",
   "url": "http://github.com/barbarred",
-  "likes": 200
+  "likes": 34
 }
 
 ### delete a blog entrie
-DELETE http://localhost:3003/api/blogs/66957f14a261033b49c5d533
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBlZHJvZGV2IiwiaWQiOiI2Njg4NTZmODcyMzMzNzc0ZmNmZDU3NGIiLCJpYXQiOjE3MjEwNjY0OTd9.UuOWEDnB1t3uj6EVP5pW3vMwcGRjhAJvLRZlfXoZwiY
+DELETE http://localhost:3003/api/blogs/6697f86775ddb623ec2b392a
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvcnJpIiwiaWQiOiI2Njg4NTRiZjk4M2U4Y2M4ZDAzMjVlNTQiLCJpYXQiOjE3MjEyMzU0NDh9.8aC1aeT4aGsYRQjUXAO_okGoiCRw439aQ6sh7Rz4GBc
 
 ### update a entrie blog
 PUT http://localhost:3003/api/blogs/66746c2fe27810bd54ca089c
