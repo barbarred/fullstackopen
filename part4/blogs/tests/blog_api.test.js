@@ -1,12 +1,12 @@
 const { test, after, beforeEach, describe } = require('node:test')
 const bcrypt = require('bcrypt')
-const Blog = require('../models/blog.js')
-const User = require('../models/users.js')
 const assert = require('assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const list_helper = require('../utils/list_helper.js')
+const User = require('../models/users.js')
+const Blogtest = require('../models/blog.js')
 
 const api = supertest(app)
 
@@ -16,20 +16,12 @@ const initialEntries = [
     author: "rorri",
     url: "https://github.com/barbarred",
     likes: 33
-  },
-  {
-    title: "another entrie for testing",
-    author: "rorridev",
-    url: "https://github.com/barbarred",
-    likes: 23
   }
 ]
 
 beforeEach( async () => {
-  await Blog.deleteMany({})
-  let entrieObject = new Blog(initialEntries[0])
-  await entrieObject.save()
-  entrieObject = new Blog(initialEntries[1])
+  await Blogtest.deleteMany({})
+  let entrieObject = new Blogtest(initialEntries[0])
   await entrieObject.save()
 })
 
@@ -54,25 +46,53 @@ describe('Gets correct info', () => {
 })
 
 describe('Add entries in the blogs object', () => {
-    test('one entrie created succesfully', async () => {
+  test('one entrie created succesfully', async () => {
 
-    const newEntrie = {
-      title: "new entrie created to POST method",
-      author: "barbarred",
-      url: "https://github.com/barbarred",
-      likes: 22
+  const newEntrie = {
+    title: "new entrie created to POST method",
+    author: "Testingname",
+    url: "https://github.com/barbarred",
+    likes: 22,
+    user: {
+      username: "userTest",
+      name: "Testingname",
+      id: "66abeb8fd5b66f84b115bcb9"
     }
+  }
 
-    await api
-      .post('/api/blogs')
-      .send(newEntrie)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+  await api
+    .post('/api/blogs')
+    .auth(`${process.env.TOKENTEST}`, {type:'bearer'})
+    .send(newEntrie)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
+  const response = await api.get('/api/blogs')
 
-    assert.strictEqual(response.body.length, initialEntries.length + 1)
+  assert.strictEqual(response.body.length, initialEntries.length + 1)
+})
 
+  test('entrie without toke', async () => {
+    const entrieWithoutTkn = {
+    title: "new entrie created to POST method",
+    author: "Testingname",
+    url: "https://github.com/barbarred",
+    likes: 22,
+    user: {
+      username: "userTest",
+      name: "Testingname",
+      id: "66abeb8fd5b66f84b115bcb9"
+    }
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(entrieWithoutTkn)
+    .expect(401)
+
+  const response = await api.get('/api/blogs')
+
+  assert.strictEqual(response.body.length, initialEntries.length)
   })
 })
 
@@ -80,12 +100,18 @@ describe('Checking somes keys on Blogs', () => {
     test('check likes key in object blogs', async () => {
       const newEntrie = {
         title: "a one entrie without the likes key",
-        author: "rorri",
-        url: "https://github.com/barbarred"
+        author: "root",
+        url: "https://github.com/barbarred",
+        user: {
+          username: "userTest",
+          name: "Testingname",
+          id: "66abeb8fd5b66f84b115bcb9"
+        }
       }
       
       await api
         .post('/api/blogs')
+        .set('Authorization' ,`Bearer ${process.env.TOKENTEST}`)
         .send(newEntrie)
         .expect(400)
     })
@@ -93,11 +119,17 @@ describe('Checking somes keys on Blogs', () => {
     test('check title & url keys in the blogs object', async () => {
       const newEntrie = {
         title: "a one entrie without the likes key",
-        author: "rorri"
+        author: "rorri",
+        user: {
+          username: "userTest",
+          name: "Testingname",
+          id: "66abeb8fd5b66f84b115bcb9"
+        }
       }
 
       await api
         .post('/api/blogs')
+        .set('Authorization' ,`Bearer ${process.env.TOKENTEST}`)
         .send(newEntrie)
         .expect(400)
     })
@@ -105,24 +137,36 @@ describe('Checking somes keys on Blogs', () => {
 
 describe('Delete and Update one entrie of the object blogs', () => {
   test('succeeds deletion with the status code 204', async () => {
-    const response = await api.get('/api/blogs')
-    const blogs = response.body
-    const entrieToDelete = blogs[0]
 
-    await api
-      .delete(`/api/blogs/${entrieToDelete.id}`)
-      .expect(204)
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  const entrieToDelete = blogs[0]
+
+  console.log(entrieToDelete)
+
+  await api
+    .delete(`/api/blogs/${entrieToDelete.id}`)
+    .set('Authorization' ,`Bearer ${process.env.TOKENTEST}`)
+    .expect(204)
+
   })
+
   test('The update is successful with status code 200', async () => {
     const updateEntrie = {
       title: "update a entrie",
-      author: "barbarred",
+      author: "root",
       url: "https://github.com/barbarred",
-      likes: 33
+      likes: 33,
+      user: {
+        username: "userTest",
+        name: "Testingname",
+        id: "66abeb8fd5b66f84b115bcb9"
+      }
     }
 
     await api
-      .put('/api/blogs/6674920364cf31d692ea2313')
+      .put('/api/blogs/66a96fb518aa907088d90a47')
+      .set('Authorization' ,`Bearer ${process.env.TOKENTEST}`)
       .send(updateEntrie)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -132,8 +176,10 @@ describe('Delete and Update one entrie of the object blogs', () => {
 
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
-    await User.deleteMany({})
-    const passwordHash = await bcrypt.hash('sekret', 10)
+    await User.deleteMany({ username: { $nin:["userTest"] } })
+    const password = "13081707"
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
     const user = new User({username: 'root', passwordHash})
     await user.save()
   })
@@ -174,7 +220,6 @@ describe('when there is initially one user in db', () => {
   })
 
 })
-
 
 after(async () => {
   await mongoose.connection.close()
