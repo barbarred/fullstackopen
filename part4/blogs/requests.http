@@ -2,20 +2,17 @@
 GET http://localhost:3003/api/blogs
 
 ### create blog entrie
-POST http://localhost:3003/api/blogs
+POST http://localhost:3003/api/login
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWQiOiI2NmFiZWI4ZmQ1YjY2Zjg0YjExNWJjYjkiLCJpYXQiOjE3MjI2MTgzMzh9.LjAtTRJGDUUdGsuncEdZspAKyNxR1QZdkZT6JMyhFaI
 
 {
-  "title": "another entrie for to be delete",
-  "author": "Testingname",
-  "url": "https://github.com/barbarred",
-  "likes": 2
+  "username": "rorridev",
+  "password": "13081707"
 }
 
 ### delete a blog entrie
 DELETE http://localhost:3003/api/blogs/66ad128199beb3653c8a12bb
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWQiOiI2NmFiZWI4ZmQ1YjY2Zjg0YjExNWJjYjkiLCJpYXQiOjE3MjI2MTgzMzh9.LjAtTRJGDUUdGsuncEdZspAKyNxR1QZdkZT6JMyhFaI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvcnJpZGV2IiwiaWQiOiI2NmQ3NTM0NWZlZmY5MzcwMjg1NzU1ODUiLCJpYXQiOjE3MjUzODc2Mjl9.XE1Fak4bVlG8cge55uagImq1Abru5HAIsT2cAp_yUnw
 
 ### update a entrie blog
 PUT http://localhost:3003/api/blogs/66746c2fe27810bd54ca089c
