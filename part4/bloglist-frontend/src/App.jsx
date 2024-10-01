@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import loginService from './services/login'
+import BlogForm from './components/note-form'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import SuccessNotification from './components/SuccessNotifications'
 import ErrorLogin from './components/ErrorNotification'
 
 
+
 const App = () => {
+  const [formBlogVisible, setFormBlogVisible] = useState(false)
   const [blogs, setBlogs] = useState([])
   const [successMessage, setSuccessMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -109,55 +112,37 @@ const App = () => {
     </form>
   )
 
-  const blogsForm = () => (
-    <div>
-        <p>{user.name} logged in <button onClick={closeLogin}>logout</button> </p>
-        <h2>create new</h2>
-        <form onSubmit={addBlog}>
-        <div>
-          title
-            <input 
-            type="text" 
-            value={title}
-            name='Title'
-            onChange={({ target }) => setTitle(target.value)}
-          />
+  const blogsForm = () => {
+
+    const hideBtn = {display: formBlogVisible ? 'none' : '' }
+    const showBtn = {display: formBlogVisible ? '' : 'none'}
+
+    return(
+      <div>
+        <p>{user.name} logged in <button onClick={closeLogin}>logout</button></p>
+        <div style={hideBtn}>
+          <button onClick={() => setFormBlogVisible(true)} >new note</button>
         </div>
-        <div>
-          author
-            <input 
-              type="text" 
-              value={author}
-              name='Author'
-              onChange={({ target }) => setAuthor(target.value)}
-            />
+        <div style={showBtn}>
+        <BlogForm 
+          handleSubmit={addBlog}
+          title={title}
+          handleTitleChange={({target}) => setTitle(target.value)}
+          author={author}
+          handleAuthorChange={({target}) => setAuthor(target.value) }
+          url={url}
+          handleUrlChange={({target}) => setUrl(target.value)}
+          likes={likes}
+          handleLikesChange={({target}) => setLikes(target.value)}
+        />
+        <button onClick={() => setFormBlogVisible(false)}>cancel</button>
         </div>
-        <div>
-          url
-            <input 
-              type="url" 
-              value={url}
-              name='Url'
-              onChange={({ target }) => setUrl(target.value)}
-            />
-        </div>
-        <div>
-          likes
-            <input 
-              type="num" 
-              value={likes}
-              name='Likes'
-              onChange={({ target }) => setLikes(target.value)}
-            />
-        </div>
-        <button type='submit'>create</button>
-        </form>
-        
         {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
-      </div>
-  )
+    </div>
+    )
+  }
   
   return (
     <>
