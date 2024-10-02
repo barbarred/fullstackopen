@@ -1,44 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import loginService from './services/login'
 import BlogForm from './components/note-form'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import SuccessNotification from './components/SuccessNotifications'
 import ErrorLogin from './components/ErrorNotification'
+import Togglable from './components/togglable'
 
 
 
 const App = () => {
-  const [formBlogVisible, setFormBlogVisible] = useState(false)
   const [blogs, setBlogs] = useState([])
   const [successMessage, setSuccessMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
-  const [likes, setLikes] = useState('')
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url,
-      likes: likes
-    }
+  const blogFormRef = useRef()
 
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-        setLikes('')
-        setSuccessMessage(`a new blog You're NOT gonna need it! by ${author} added`)
+        setSuccessMessage(`a new blog You're NOT gonna need it! by ${user.name} added`)
         setTimeout(() => {
           setSuccessMessage(null)
         }, 3000)
@@ -114,29 +101,14 @@ const App = () => {
 
   const blogsForm = () => {
 
-    const hideBtn = {display: formBlogVisible ? 'none' : '' }
-    const showBtn = {display: formBlogVisible ? '' : 'none'}
-
     return(
       <div>
         <p>{user.name} logged in <button onClick={closeLogin}>logout</button></p>
-        <div style={hideBtn}>
-          <button onClick={() => setFormBlogVisible(true)} >new note</button>
-        </div>
-        <div style={showBtn}>
-        <BlogForm 
-          handleSubmit={addBlog}
-          title={title}
-          handleTitleChange={({target}) => setTitle(target.value)}
-          author={author}
-          handleAuthorChange={({target}) => setAuthor(target.value) }
-          url={url}
-          handleUrlChange={({target}) => setUrl(target.value)}
-          likes={likes}
-          handleLikesChange={({target}) => setLikes(target.value)}
-        />
-        <button onClick={() => setFormBlogVisible(false)}>cancel</button>
-        </div>
+        <Togglable buttonLabel='new note' ref={blogFormRef}>
+          <BlogForm 
+            createBlog={addBlog}
+          />
+        </Togglable>
         {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
