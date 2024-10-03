@@ -7,8 +7,6 @@ import SuccessNotification from './components/SuccessNotifications'
 import ErrorLogin from './components/ErrorNotification'
 import Togglable from './components/togglable'
 
-
-
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [successMessage, setSuccessMessage] = useState(null)
@@ -18,6 +16,22 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
+
+  useEffect(() => {
+    blogService.getAll().then(blogs =>{
+      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
+      setBlogs( sortedBlogs )
+    })  
+  }, [blogs])
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedUser')
+    if(loggedUserJSON){
+      const user = JSON.parse(loggedUserJSON)
+      blogService.setToken(user.token)
+      setUser(user)
+    }
+  }, [])
 
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
@@ -36,25 +50,13 @@ const App = () => {
     const id = postUpdated.id_post
     blogService
       .updateLikes(postUpdated, id)
-    blogService
-      .getAll().then(blogs => 
-      setBlogs( blogs )
-    )
   }
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedUser')
-    if(loggedUserJSON){
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-    }
-  }, [])
+  const deletePost = (removePost) => {
+    const idPost = removePost.idToRemove
+    blogService
+      .deletePost(idPost)
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -120,7 +122,7 @@ const App = () => {
           />
         </Togglable>
         {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updatePost={updatePost}/>
+        <Blog key={blog.id} blog={blog} updatePost={updatePost} deletePost={deletePost}/>
       )}
     </div>
     )
