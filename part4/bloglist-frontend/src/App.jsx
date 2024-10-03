@@ -32,6 +32,16 @@ const App = () => {
       })
   }
 
+  const updatePost = (postUpdated) => {
+    const id = postUpdated.id_post
+    blogService
+      .updateLikes(postUpdated, id)
+    blogService
+      .getAll().then(blogs => 
+      setBlogs( blogs )
+    )
+  }
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -110,7 +120,7 @@ const App = () => {
           />
         </Togglable>
         {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updatePost={updatePost}/>
       )}
     </div>
     )
