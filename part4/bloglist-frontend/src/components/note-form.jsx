@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
@@ -15,15 +15,15 @@ const BlogForm = ({ createBlog }) => {
       likes: likes
     })
   }
-  
+
   return(
     <div>
-    <h2>create new</h2>
-        <form onSubmit={addBlog}>
+      <h2>create new</h2>
+      <form onSubmit={addBlog}>
         <div>
           title
-            <input 
-            type="text" 
+          <input
+            type="text"
             value={title}
             name='Title'
             onChange={ event => setTitle(event.target.value) }
@@ -31,33 +31,33 @@ const BlogForm = ({ createBlog }) => {
         </div>
         <div>
           author
-            <input 
-              type="text" 
-              value={author}
-              name='Author'
-              onChange={ event => setAuthor(event.target.value) }
-            />
+          <input
+            type="text"
+            value={author}
+            name='Author'
+            onChange={ event => setAuthor(event.target.value) }
+          />
         </div>
         <div>
           url
-            <input 
-              type="url" 
-              value={url}
-              name='Url'
-              onChange={ event => setUrl(event.target.value) }
-            />
+          <input
+            type="url"
+            value={url}
+            name='Url'
+            onChange={ event => setUrl(event.target.value) }
+          />
         </div>
         <div>
           likes
-            <input 
-              type="num" 
-              value={likes}
-              name='Likes'
-              onChange={event => setLikes(event.target.value) }
-            />
+          <input
+            type="num"
+            value={likes}
+            name='Likes'
+            onChange={event => setLikes(event.target.value) }
+          />
         </div>
         <button type='submit'>create</button>
-        </form>
+      </form>
     </div>
   )
 }

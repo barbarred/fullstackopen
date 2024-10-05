@@ -1,4 +1,4 @@
-export function User ({user}) {
+export function User ({ user }) {
   return(
     <div>
       {user.name}

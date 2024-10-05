@@ -18,10 +18,10 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>{
+    blogService.getAll().then(blogs => {
       const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
       setBlogs( sortedBlogs )
-    })  
+    })
   }, [blogs])
 
   useEffect(() => {
@@ -91,16 +91,16 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input 
-            type="text"
-            value={username}
-            name='Username'
-            onChange={( { target } ) => setUsername(target.value)}
-           />
+        <input
+          type="text"
+          value={username}
+          name='Username'
+          onChange={( { target } ) => setUsername(target.value)}
+        />
       </div>
       <div>
        password
-        <input 
+        <input
           type="password"
           value={password}
           name='Password'
@@ -117,29 +117,29 @@ const App = () => {
       <div>
         <p>{user.name} logged in <button onClick={closeLogin}>logout</button></p>
         <Togglable buttonLabel='new note' ref={blogFormRef}>
-          <BlogForm 
+          <BlogForm
             createBlog={addBlog}
           />
         </Togglable>
         {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updatePost={updatePost} deletePost={deletePost}/>
-      )}
-    </div>
+          <Blog key={blog.id} blog={blog} updatePost={updatePost} deletePost={deletePost}/>
+        )}
+      </div>
     )
   }
-  
+
   return (
     <>
-    <div>
-      <h2>blogs</h2>
-      <SuccessNotification text={successMessage} />
-      <ErrorLogin text={errorMessage} />
-      { user === null
-        ? loginForm()
-        : blogsForm()
-      }
+      <div>
+        <h2>blogs</h2>
+        <SuccessNotification text={successMessage} />
+        <ErrorLogin text={errorMessage} />
+        { user === null
+          ? loginForm()
+          : blogsForm()
+        }
 
-    </div>
+      </div>
     </>
   )
 }
