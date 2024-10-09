@@ -45,15 +45,17 @@ const Blog = ({ blog, updatePost, deletePost }) => {
   return(
     <>
       <div style={blogStyle}>
-        <div>
-          {blog.title} <button style={showBtn} onClick={showDetails}>view</button><button style={hideBtn} onClick={showDetails}>hide</button>
+        <div className='title'>
+          {blog.title} by {blog.author} <button style={showBtn} onClick={showDetails} className='viewBtn' >view</button><button style={hideBtn} onClick={showDetails}>hide</button>
         </div>
-        <div style={hideDetails}>
+        <div style={hideDetails} className='post-details'>
           <section>
-            {blog.url} <br />
-        likes {blog.likes}<button onClick={updateLikes}>like</button> <br />
-            {blog.author} <br />
-            <button onClick={handleDelete}>remove</button>
+            <div>
+              <div className='url'>{blog.url}</div>
+              <div className='likes'>likes {blog.likes}<button onClick={updateLikes}>like</button></div>
+              <div className='author'>{blog.author}</div>
+              <div><button onClick={handleDelete}>remove</button></div>
+            </div>
           </section>
         </div>
       </div>
