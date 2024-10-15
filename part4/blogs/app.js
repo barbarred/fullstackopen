@@ -33,7 +33,7 @@ mongoose.connect(config.MONGODB_URI)
 
   if(process.env.NODE_ENV === 'test'){
     const testingRouter = require('./controllers/testing.js')
-    app.use('/app/testing', testingRouter)
+    app.use('/api/testing', testingRouter)
   }
 
   app.use(middleware.errorHandler)
