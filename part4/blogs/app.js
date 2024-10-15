@@ -9,6 +9,7 @@ const loginRouter = require('./controllers/login.js')
 const logger = require('./utils/logger.js')
 const mongoose = require('mongoose')
 const middleware = require('./utils/middleware.js')
+const { process_params } = require('express/lib/router/index.js')
 
 mongoose.set('strictQuery', false)
 
@@ -30,7 +31,11 @@ mongoose.connect(config.MONGODB_URI)
   app.use('/api/users', usersRouter)
   app.use('/api/login', loginRouter)
 
-  app.use(middleware.errorHandler)
+  if(process.env.NODE_ENV === 'test'){
+    const testingRouter = require('./controllers/testing.js')
+    app.use('/app/testing', testingRouter)
+  }
 
+  app.use(middleware.errorHandler)
 
   module.exports = app
