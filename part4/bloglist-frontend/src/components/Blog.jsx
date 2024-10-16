@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-const Blog = ({ blog, updatePost, deletePost }) => {
+const Blog = ({ blog, updatePost, deletePost, user }) => {
   const [visible, setVisible] = useState(false)
+  const [viewBtn, setViewBtn] = useState(false)
 
   const hideDetails = { display: visible ? '' : 'none' }
 
@@ -10,6 +11,9 @@ const Blog = ({ blog, updatePost, deletePost }) => {
 
   const showDetails = () => {
     setVisible(!visible)
+    if(user.username === blog.user.username){
+      setViewBtn(true)
+    }
   }
 
   const updateLikes = (event) => {
@@ -44,7 +48,7 @@ const Blog = ({ blog, updatePost, deletePost }) => {
 
   return(
     <>
-      <div style={blogStyle}>
+      <div style={blogStyle} data-testid='blog'>
         <div className='title'>
           {blog.title} by {blog.author} <button style={showBtn} onClick={showDetails} className='viewBtn' >view</button><button style={hideBtn} onClick={showDetails}>hide</button>
         </div>
@@ -54,7 +58,7 @@ const Blog = ({ blog, updatePost, deletePost }) => {
               <div className='url'>{blog.url}</div>
               <div className='likes'>likes {blog.likes}<button onClick={updateLikes}>like</button></div>
               <div className='author'>{blog.author}</div>
-              <div><button onClick={handleDelete}>remove</button></div>
+              <div>{viewBtn ? <button onClick={handleDelete}>remove</button> : ''}</div>
             </div>
           </section>
         </div>

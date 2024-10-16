@@ -22,7 +22,7 @@ const App = () => {
       const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
       setBlogs( sortedBlogs )
     })
-  }, [blogs])
+  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -33,9 +33,9 @@ const App = () => {
     }
   }, [])
 
-  const addBlog = (blogObject) => {
+  const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
-    blogService
+    await blogService
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
@@ -44,18 +44,30 @@ const App = () => {
           setSuccessMessage(null)
         }, 3000)
       })
+    await blogService.getAll().then(blogs => {
+      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
+      setBlogs( sortedBlogs )
+    })
   }
 
-  const updatePost = (postUpdated) => {
+  const updatePost = async (postUpdated) => {
     const id = postUpdated.id_post
-    blogService
+    await blogService
       .updateLikes(postUpdated, id)
+    await blogService.getAll().then(blogs => {
+      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
+      setBlogs( sortedBlogs )
+    })
   }
 
-  const deletePost = (removePost) => {
+  const deletePost = async (removePost) => {
     const idPost = removePost.idToRemove
-    blogService
+    await blogService
       .deletePost(idPost)
+    await blogService.getAll().then(blogs => {
+      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
+      setBlogs( sortedBlogs )
+    })
   }
 
   const handleLogin = async (event) => {
@@ -124,7 +136,7 @@ const App = () => {
           />
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} updatePost={updatePost} deletePost={deletePost}/>
+          <Blog key={blog.id} blog={blog} user={user} updatePost={updatePost} deletePost={deletePost}/>
         )}
       </div>
     )
