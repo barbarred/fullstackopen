@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith, createEntrie } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async({ page, request }) => {
@@ -20,58 +21,37 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({page}) => {
-      await page.getByTestId('username').fill('rorritest')
-      await page.getByTestId('password').fill('13081707')
-      await page.getByRole('button', {name: 'login'}).click()
-
+      await loginWith(page, 'rorritest', '13081707')
       await expect(page.getByText('Ricardo logged in')).toBeVisible()
     })
     test('fails with wrong credentials', async ({page}) => {
-      await page.getByTestId('username').fill('rorritest')
-      await page.getByTestId('password').fill('wrong')
-      await page.getByRole('button', {name: 'login'}).click()
-
+      await loginWith(page, 'rorritest', 'wrong')
       await expect(page.getByText('Wrong username or password')).toBeVisible()
     })
   })
 
   describe('When logged in', () => {
-    beforeEach( async ({ page }) => {
-      await page.getByTestId('username').fill('rorritest')
-      await page.getByTestId('password').fill('13081707')
-      await page.getByRole('button', {name: 'login'}).click()
-    })
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', {name: 'new note'}).click()
-      await page.getByTestId('title').fill('one entrie with playwright')
-      await page.getByTestId('author').fill('rorridev')
-      await page.getByTestId('url').fill('http://github.com/barbarred')
-      await page.getByTestId('likes').fill('33')
-      await page.getByRole('button', {name: 'create'}).click()
-      await expect(page.getByText('one entrie with playwright by rorridev')).toBeVisible()
+      await loginWith(page, 'rorritest', '13081707')
+      await createEntrie(page, 'entrie with playwright', 'rorritest', 'http://github.com/barbarred', '33')
+      await expect(page.getByText('entrie with playwright by rorritest')).toBeVisible()
     })
     test('Blog can be edited', async ({ page }) => {
-      await page.getByRole('button', {name: 'new note'}).click()
-      await page.getByTestId('title').fill('one entrie with playwright')
-      await page.getByTestId('author').fill('rorridev')
-      await page.getByTestId('url').fill('http://github.com/barbarred')
-      await page.getByTestId('likes').fill('33')
-      await page.getByRole('button', {name: 'create'}).click()
+      await loginWith(page, 'rorritest', '13081707')
+      await createEntrie(page, 'entrie with playwright', 'rorritest', 'http://github.com/barbarred', '33')
       await page.getByRole('button', {name: 'view'}).click()
       await page.getByRole('button', {name: 'like'}).click()
       await expect(page.getByText('likes 34')).toBeVisible()
     })
     test('Blog can be deleted', async ({ page }) => {
-      await page.getByRole('button', {name: 'new note'}).click()
-      await page.getByTestId('title').fill('one entrie with playwright')
-      await page.getByTestId('author').fill('rorridev')
-      await page.getByTestId('url').fill('http://github.com/barbarred')
-      await page.getByTestId('likes').fill('33')
-      await page.getByRole('button', {name: 'create'}).click()
+      await loginWith(page, 'rorritest', '13081707')
+      await createEntrie(page, 'entrie with playwright', 'rorritest', 'http://github.com/barbarred', '33')
       await page.getByRole('button', {name: 'view'}).click()
-      await page.getByRole('button', {name: 'remove'}).click()
-      page.on('dialog', dialog => dialog.accept())
-      await expect(page.getByText('one entrie with playwright by rorridev')).not.toBeVisible()
+      page.on('dialog', async dialog => {
+        expect(dialog.type()).toContain('remove')
+        expect(dialog.message()).toContain('Remove una nota by rorritest')
+        await dialog.accept()
+      })
     })
   })
 
