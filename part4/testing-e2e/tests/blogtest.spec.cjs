@@ -47,11 +47,11 @@ describe('Blog app', () => {
       await loginWith(page, 'rorritest', '13081707')
       await createEntrie(page, 'entrie with playwright', 'rorritest', 'http://github.com/barbarred', '33')
       await page.getByRole('button', {name: 'view'}).click()
-      page.on('dialog', async dialog => {
-        expect(dialog.type()).toContain('remove')
-        expect(dialog.message()).toContain('Remove una nota by rorritest')
+      await page.getByRole('button', {name: 'remove'}).click(page.on('dialog', async dialog => {
+        expect(dialog.message()).toContain('Remove entrie with playwright by rorritest')
         await dialog.accept()
-      })
+      }))
+      await expect(page.getByText('entrie with playwright by rorritest')).not.toBeVisible()
     })
   })
 
