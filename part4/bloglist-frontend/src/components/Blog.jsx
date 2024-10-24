@@ -50,7 +50,7 @@ const Blog = ({ blog, updatePost, deletePost, user }) => {
     <>
       <div style={blogStyle} data-testid='blog'>
         <div className='title'>
-          {blog.title} by {blog.author} <button style={showBtn} onClick={showDetails} className='viewBtn' >view</button><button style={hideBtn} onClick={showDetails}>hide</button>
+          {blog.title} by {blog.author} <button style={showBtn} onClick={showDetails} className='viewBtn' data-testid='viewBtn'>view</button><button style={hideBtn} onClick={showDetails}>hide</button>
         </div>
         <div style={hideDetails} className='post-details'>
           <section>
@@ -58,7 +58,7 @@ const Blog = ({ blog, updatePost, deletePost, user }) => {
               <div className='url'>{blog.url}</div>
               <div className='likes'>likes {blog.likes}<button onClick={updateLikes}>like</button></div>
               <div className='author'>{blog.author}</div>
-              <div>{viewBtn ? <button onClick={handleDelete}>remove</button> : ''}</div>
+              <div>{viewBtn ? <button onClick={handleDelete} data-testid='removeBtn' >remove</button> : ''}</div>
             </div>
           </section>
         </div>

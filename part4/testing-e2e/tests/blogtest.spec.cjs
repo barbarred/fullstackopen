@@ -46,6 +46,7 @@ describe('Blog app', () => {
     test('Blog can be deleted', async ({ page }) => {
       await loginWith(page, 'rorritest', '13081707')
       await createEntrie(page, 'entrie with playwright', 'rorritest', 'http://github.com/barbarred', '33')
+      await page.goto('http://localhost:5173')
       await page.getByRole('button', {name: 'view'}).click()
       await page.getByRole('button', {name: 'remove'}).click(page.on('dialog', async dialog => {
         expect(dialog.message()).toContain('Remove entrie with playwright by rorritest')
@@ -53,6 +54,28 @@ describe('Blog app', () => {
       }))
       await expect(page.getByText('entrie with playwright by rorritest')).not.toBeVisible()
     })
+    test('user can be view delete button only in your blogs', async ({page, request}) => {
+      await loginWith(page, 'rorritest', '13081707')
+      await createEntrie(page, 'another entrie with playwright', 'rorritest', 'http://github.com/barbarred', '33')
+      await page.getByRole('button', {name: 'logout'}).click()
+      await request.post('http://localhost:3003/api/users', {
+        data: {
+          username: 'user2',
+          name: 'Jose',
+          password: '13081707'
+        }
+      })
+      await page.goto('http://localhost:5173')
+      await loginWith(page, 'user2', '13081707')
+      await createEntrie(page, 'entrie with playwright', 'user2', 'http://github.com/barbarred', '33')
+      await page.goto('http://localhost:5173')
+      await page.getByTestId('blog').getByText('entrie with playwright by user2').getByRole('button', {name: 'view'}).click()
+      await expect(page.getByRole('button', {name: 'Remove'})).toBeVisible()
+      await page.getByRole('button', {name: 'hide'}).click()
+      await page.getByTestId('blog').getByText('another entrie with playwright by rorritest').getByRole('button', {name: 'view'}).click()
+      await expect(page.getByRole('button', {name: 'Remove'})).not.toBeVisible()
+    })
   })
+
 
 })
