@@ -35,6 +35,9 @@ const reducer = (state = initialState, action) => {
         anectode.id !== id ? anectode : anecdoteVoted
       )
     }
+    case 'NEW_ANECDOTE':
+      return [...state, action.payload]
+
   }
 
   return state
