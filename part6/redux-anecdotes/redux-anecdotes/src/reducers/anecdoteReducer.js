@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -18,6 +19,7 @@ const asObject = (anecdote) => {
     votes: 0
   }
 }
+
 
 const initialState = anecdotesAtStart.map(asObject)
 
@@ -39,6 +41,7 @@ const anecdoteSlice = createSlice({
       const anecdoteVoted = {
         ...anectodeToVote,
         votes: anectodeToVote.votes + 1
+        
       }
       return state.map(anectode => 
         anectode.id !== id ? anectode : anecdoteVoted
