@@ -1,4 +1,5 @@
-const Notification = () => {
+// eslint-disable-next-line react/prop-types
+const Notification = ({ notification }) => {
   const style = {
     border: 'solid',
     padding: 10,
@@ -6,11 +7,12 @@ const Notification = () => {
     marginBottom: 5
   }
   
-  if (true) return null
+  console.log(notification)
+  if (notification === '') return null
 
   return (
     <div style={style}>
-      
+      {notification}
     </div>
   )
 }
