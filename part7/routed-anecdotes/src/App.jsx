@@ -88,7 +88,11 @@ const Anecdote = ({anecdotes}) => {
   const id = useParams().id
   const anecdote = anecdotes.find(an => an.id === Number(id))
   return (
-    <div>{anecdote.content}</div>
+    <>
+      <h1>{anecdote.content}</h1>
+      <p>has {anecdote.votes} votes</p>
+      <p>for more info se {anecdote.info}</p>
+    </>
   )
 }
 
