@@ -1,0 +1,11 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhcmJhcnJlZCIsImlkIjoiNjZkYjE5MmQyZGI0NjQ5NDU3NzUwYWFmIiwiaWF0IjoxNzI1NjM0OTEzfQ.02Epb3Pip95QkLR7DL5Rg-0sOVkZRZ7FHtCNelPwB-0
+
+
+{
+  "title": "one blog from barbarred",
+  "author": "barbarred",
+  "url": "https://github.com/barbarred",
+  "likes": 33
+}
