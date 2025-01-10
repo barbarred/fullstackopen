@@ -3,19 +3,28 @@ import loginService from './services/login';
 import BlogForm from './components/note-form';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
-import SuccessNotification from './components/SuccessNotifications';
-import ErrorLogin from './components/ErrorNotification';
+import {
+  SuccessNotification,
+  ErrorLogin,
+  RemoveNotification,
+} from './components/Notifications';
 import Togglable from './components/togglable';
+import { useDispatch } from 'react-redux';
+import {
+  setSuccessMessage,
+  setError,
+  setErrorRemove,
+  clearNotification,
+} from './reducers/notificationReducer';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
 
   const blogFormRef = useRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -34,14 +43,15 @@ const App = () => {
   }, []);
 
   const addBlog = async (blogObject) => {
+    const titleBlog = blogObject.title;
     blogFormRef.current.toggleVisibility();
     await blogService.create(blogObject).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog));
-      setSuccessMessage(
-        `a new blog You're NOT gonna need it! by ${user.name} added`
+      dispatch(
+        setSuccessMessage(`a new blog '${titleBlog}' by ${user.name} added`)
       );
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch(clearNotification());
       }, 3000);
     });
     await blogService.getAll().then((blogs) => {
@@ -65,6 +75,10 @@ const App = () => {
     await blogService.getAll().then((blogs) => {
       const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
       setBlogs(sortedBlogs);
+      dispatch(setErrorRemove('Post removed successfully'));
+      setTimeout(() => {
+        dispatch(clearNotification());
+      }, 3000);
     });
   };
 
@@ -82,9 +96,9 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (exception) {
-      setErrorMessage('Wrong username or password');
+      dispatch(setError('Wrong username or password'));
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch(clearNotification());
       }, 5000);
     }
 
@@ -148,8 +162,9 @@ const App = () => {
     <>
       <div>
         <h2>blogs</h2>
-        <SuccessNotification text={successMessage} />
-        <ErrorLogin text={errorMessage} />
+        <SuccessNotification />
+        <ErrorLogin />
+        <RemoveNotification />
         {user === null ? loginForm() : blogsForm()}
       </div>
     </>

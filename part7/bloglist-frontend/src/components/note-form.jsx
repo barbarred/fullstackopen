@@ -14,6 +14,10 @@ const BlogForm = ({ createBlog }) => {
       url: url,
       likes: likes,
     });
+    setTitle('');
+    setAuthor('');
+    setUrl('');
+    setLikes('');
   };
 
   return (
