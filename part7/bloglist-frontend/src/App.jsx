@@ -9,16 +9,16 @@ import {
   RemoveNotification,
 } from './components/Notifications';
 import Togglable from './components/togglable';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   setSuccessMessage,
   setError,
   setErrorRemove,
   clearNotification,
 } from './reducers/notificationReducer';
+import { initializeBlogs, createBlog } from './reducers/blogsReducer';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -26,11 +26,13 @@ const App = () => {
   const blogFormRef = useRef();
   const dispatch = useDispatch();
 
+  const blogs = useSelector((state) => {
+    return state.blogs;
+  });
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+
   useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-    });
+    dispatch(initializeBlogs());
   }, []);
 
   useEffect(() => {
@@ -45,19 +47,14 @@ const App = () => {
   const addBlog = async (blogObject) => {
     const titleBlog = blogObject.title;
     blogFormRef.current.toggleVisibility();
-    await blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog));
-      dispatch(
-        setSuccessMessage(`a new blog '${titleBlog}' by ${user.name} added`)
-      );
-      setTimeout(() => {
-        dispatch(clearNotification());
-      }, 3000);
-    });
-    await blogService.getAll().then((blogs) => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-    });
+    dispatch(createBlog(blogObject));
+    dispatch(
+      setSuccessMessage(`a new blog '${titleBlog}' by ${user.name} added`)
+    );
+    setTimeout(() => {
+      dispatch(clearNotification());
+    }, 3000);
+    dispatch(initializeBlogs());
   };
 
   const updatePost = async (postUpdated) => {
@@ -145,7 +142,7 @@ const App = () => {
         <Togglable buttonLabel="new note" ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
         </Togglable>
-        {blogs.map((blog) => (
+        {sortedBlogs.map((blog) => (
           <Blog
             key={blog.id}
             blog={blog}
