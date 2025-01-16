@@ -28,5 +28,23 @@ export const createBlog = (blogObject) => {
   };
 };
 
+export const updatePost = (postUpdated, id) => {
+  return async (dispatch) => {
+    await blogServices.updateLikes(postUpdated, id);
+    const blogs = await blogServices.getAll();
+    const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+    dispatch(setBlogs(sortedBlogs));
+  };
+};
+
+export const deletePost = (idPost) => {
+  return async (dispatch) => {
+    await blogServices.deletePost(idPost);
+    const blogs = await blogServices.getAll();
+    const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+    dispatch(setBlogs(sortedBlogs));
+  };
+};
+
 export const { newBlog, setBlogs } = blogSlice.actions;
 export default blogSlice.reducer;

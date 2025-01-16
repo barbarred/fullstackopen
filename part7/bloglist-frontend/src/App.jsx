@@ -16,7 +16,12 @@ import {
   setErrorRemove,
   clearNotification,
 } from './reducers/notificationReducer';
-import { initializeBlogs, createBlog } from './reducers/blogsReducer';
+import {
+  initializeBlogs,
+  createBlog,
+  updatePost,
+  deletePost,
+} from './reducers/blogsReducer';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -57,26 +62,18 @@ const App = () => {
     dispatch(initializeBlogs());
   };
 
-  const updatePost = async (postUpdated) => {
+  const updateLikes = async (postUpdated) => {
     const id = postUpdated.id_post;
-    await blogService.updateLikes(postUpdated, id);
-    await blogService.getAll().then((blogs) => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-    });
+    dispatch(updatePost(postUpdated, id));
   };
 
-  const deletePost = async (removePost) => {
+  const deleteEntrie = async (removePost) => {
     const idPost = removePost.idToRemove;
-    await blogService.deletePost(idPost);
-    await blogService.getAll().then((blogs) => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-      dispatch(setErrorRemove('Post removed successfully'));
-      setTimeout(() => {
-        dispatch(clearNotification());
-      }, 3000);
-    });
+    dispatch(deletePost(idPost));
+    dispatch(setErrorRemove('Post removed successfully'));
+    setTimeout(() => {
+      dispatch(clearNotification());
+    }, 3000);
   };
 
   const handleLogin = async (event) => {
@@ -147,8 +144,8 @@ const App = () => {
             key={blog.id}
             blog={blog}
             user={user}
-            updatePost={updatePost}
-            deletePost={deletePost}
+            updatePost={updateLikes}
+            deletePost={deleteEntrie}
           />
         ))}
       </div>
