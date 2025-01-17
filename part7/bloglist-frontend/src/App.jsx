@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import loginService from './services/login';
 import BlogForm from './components/note-form';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
@@ -22,17 +21,21 @@ import {
   updatePost,
   deletePost,
 } from './reducers/blogsReducer';
+import { saveUser } from './reducers/userReducer';
+import { setUser, closeSession } from './reducers/userReducer';
 
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
 
   const blogFormRef = useRef();
   const dispatch = useDispatch();
 
   const blogs = useSelector((state) => {
     return state.blogs;
+  });
+  const user = useSelector((state) => {
+    return state.user;
   });
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
@@ -45,7 +48,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(setUser(user));
     }
   }, []);
 
@@ -78,30 +81,25 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-      window.localStorage.setItem('loggedUser', JSON.stringify(user));
-      blogService.setToken(user.token);
-      setUser(user);
-      setUsername('');
-      setPassword('');
-    } catch (exception) {
-      dispatch(setError('Wrong username or password'));
+    if (username === '' || password === '') {
+      dispatch(setError('Username or password is missing'));
       setTimeout(() => {
         dispatch(clearNotification());
-      }, 5000);
+      }, 3000);
+    } else {
+      dispatch(saveUser({ username, password }));
+      dispatch(setSuccessMessage('Login successful'));
+      setTimeout(() => {
+        dispatch(clearNotification());
+      }, 3000);
     }
-
-    console.log('loggin in with', username, password);
   };
 
   const closeLogin = () => {
     window.localStorage.clear();
-    setUser(null);
+    dispatch(closeSession());
+    setUsername('');
+    setPassword('');
   };
 
   const loginForm = () => (
@@ -134,7 +132,7 @@ const App = () => {
     return (
       <div>
         <p>
-          {user.name} logged in <button onClick={closeLogin}>logout</button>
+          {user.username} logged in <button onClick={closeLogin}>logout</button>
         </p>
         <Togglable buttonLabel="new note" ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
