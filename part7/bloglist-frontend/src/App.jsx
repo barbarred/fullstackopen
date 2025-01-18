@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import BlogForm from './components/note-form';
 import Blog from './components/Blog';
+import UserDetails from './components/UsersDetails';
 import blogService from './services/blogs';
+import userService from './services/users';
 import {
   SuccessNotification,
   ErrorLogin,
@@ -27,6 +29,7 @@ import { setUser, closeSession } from './reducers/userReducer';
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [users, setUsers] = useState([]);
 
   const blogFormRef = useRef();
   const dispatch = useDispatch();
@@ -41,6 +44,12 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs());
+  }, []);
+
+  useEffect(() => {
+    userService.getUsers().then((users) => {
+      setUsers(users);
+    });
   }, []);
 
   useEffect(() => {
@@ -158,6 +167,9 @@ const App = () => {
         <ErrorLogin />
         <RemoveNotification />
         {user === null ? loginForm() : blogsForm()}
+      </div>
+      <div>
+        <UserDetails users={users} />
       </div>
     </>
   );
