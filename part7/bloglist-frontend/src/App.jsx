@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import BlogForm from './components/note-form';
 import Blog from './components/Blog';
 import UserDetails from './components/UsersDetails';
@@ -10,6 +11,7 @@ import {
   RemoveNotification,
 } from './components/Notifications';
 import Togglable from './components/togglable';
+import User from './components/User';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setSuccessMessage,
@@ -26,20 +28,30 @@ import {
 import { saveUser } from './reducers/userReducer';
 import { setUser, closeSession } from './reducers/userReducer';
 
+const HomeViwe = ({ user, loginForm, blogsForm }) => {
+  return (
+    <>
+      <h2>blogs</h2>
+      {user === null ? loginForm() : blogsForm()}
+    </>
+  );
+};
+
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [users, setUsers] = useState([]);
-
   const blogFormRef = useRef();
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => {
+    return state.user;
+  });
 
   const blogs = useSelector((state) => {
     return state.blogs;
   });
-  const user = useSelector((state) => {
-    return state.user;
-  });
+
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
   useEffect(() => {
@@ -138,6 +150,7 @@ const App = () => {
   );
 
   const blogsForm = () => {
+    if (!user) return null;
     return (
       <div>
         <p>
@@ -161,16 +174,31 @@ const App = () => {
 
   return (
     <>
-      <div>
-        <h2>blogs</h2>
-        <SuccessNotification />
-        <ErrorLogin />
-        <RemoveNotification />
-        {user === null ? loginForm() : blogsForm()}
-      </div>
-      <div>
-        <UserDetails users={users} />
-      </div>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomeViwe
+                user={user}
+                loginForm={loginForm}
+                blogsForm={blogsForm}
+              />
+            }
+          />
+        </Routes>
+        <div>
+          <SuccessNotification />
+          <ErrorLogin />
+          <RemoveNotification />
+        </div>
+        <div>
+          <UserDetails users={users} />
+        </div>
+        <div>
+          <User user={user} blogs={sortedBlogs} />
+        </div>
+      </Router>
     </>
   );
 };
