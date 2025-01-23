@@ -1,5 +1,10 @@
-const User = ({ user, blogs }) => {
-  if (!user) return null;
+import { useParams } from 'react-router-dom';
+
+const User = ({ users, blogs }) => {
+  const id = useParams().id;
+  if (!users) return null;
+
+  const user = users.find((user) => user.id === id);
   const userBlogs = blogs.filter(
     (blog) => blog.user.username === user.username
   );

@@ -27,6 +27,7 @@ import {
 } from './reducers/blogsReducer';
 import { saveUser } from './reducers/userReducer';
 import { setUser, closeSession } from './reducers/userReducer';
+import { useParams } from 'react-router-dom';
 
 const HomeViwe = ({ user, loginForm, blogsForm }) => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
   const [users, setUsers] = useState([]);
   const blogFormRef = useRef();
   const dispatch = useDispatch();
+  const id = useParams().id;
 
   const user = useSelector((state) => {
     return state.user;
@@ -174,6 +176,11 @@ const App = () => {
 
   return (
     <>
+      <div>
+        <SuccessNotification />
+        <ErrorLogin />
+        <RemoveNotification />
+      </div>
       <Router>
         <Routes>
           <Route
@@ -186,18 +193,12 @@ const App = () => {
               />
             }
           />
+          <Route path="/users" element={<UserDetails users={users} />} />
+          <Route
+            path="/users/:id"
+            element={<User users={users} blogs={sortedBlogs} />}
+          />
         </Routes>
-        <div>
-          <SuccessNotification />
-          <ErrorLogin />
-          <RemoveNotification />
-        </div>
-        <div>
-          <UserDetails users={users} />
-        </div>
-        <div>
-          <User user={user} blogs={sortedBlogs} />
-        </div>
       </Router>
     </>
   );
