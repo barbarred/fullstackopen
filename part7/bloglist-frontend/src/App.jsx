@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import BlogForm from './components/note-form';
 import Blog from './components/Blog';
+import BlogDetails from './components/BlogDetails';
 import UserDetails from './components/UsersDetails';
 import blogService from './services/blogs';
 import userService from './services/users';
@@ -181,6 +182,7 @@ const App = () => {
         <ErrorLogin />
         <RemoveNotification />
       </div>
+      <div></div>
       <Router>
         <Routes>
           <Route
@@ -197,6 +199,17 @@ const App = () => {
           <Route
             path="/users/:id"
             element={<User users={users} blogs={sortedBlogs} />}
+          />
+          <Route
+            path="/blogs/:id"
+            element={
+              <BlogDetails
+                user={user}
+                blogs={sortedBlogs}
+                updatePost={updateLikes}
+                deletePost={deleteEntrie}
+              />
+            }
           />
         </Routes>
       </Router>
