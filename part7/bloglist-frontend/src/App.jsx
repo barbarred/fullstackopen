@@ -31,12 +31,7 @@ import { setUser, closeSession } from './reducers/userReducer';
 import { useParams } from 'react-router-dom';
 
 const HomeViwe = ({ user, loginForm, blogsForm }) => {
-  return (
-    <>
-      <h2>blogs</h2>
-      {user === null ? loginForm() : blogsForm()}
-    </>
-  );
+  return <>{user === null ? loginForm() : blogsForm()}</>;
 };
 
 const App = () => {
@@ -153,12 +148,8 @@ const App = () => {
   );
 
   const blogsForm = () => {
-    if (!user) return null;
     return (
       <div>
-        <p>
-          {user.username} logged in <button onClick={closeLogin}>logout</button>
-        </p>
         <Togglable buttonLabel="new note" ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
         </Togglable>
@@ -182,7 +173,15 @@ const App = () => {
         <ErrorLogin />
         <RemoveNotification />
       </div>
-      <div></div>
+      <div>
+        <h2>Blogs</h2>
+        {user ? (
+          <p>
+            {user.username} logged in{' '}
+            <button onClick={closeLogin}>logout</button>
+          </p>
+        ) : null}
+      </div>
       <Router>
         <Routes>
           <Route
