@@ -11,6 +11,11 @@ const blogSlice = createSlice({
     setBlogs(state, action) {
       return action.payload;
     },
+    addComment(state, action) {
+      const { id, comment } = action.payload;
+      const blog = state.find((blog) => blog.id === id);
+      blog.comments = blog.comments.concat(comment);
+    },
   },
 });
 
@@ -25,6 +30,13 @@ export const createBlog = (blogObject) => {
   return async (dispatch) => {
     const returnedBlog = await blogServices.create(blogObject);
     dispatch(newBlog(returnedBlog));
+  };
+};
+
+export const addComment = (comment, id) => {
+  return async (dispatch) => {
+    const returnedComment = await blogServices.addComment(comment, id);
+    dispatch(addComment({ id, comment: returnedComment }));
   };
 };
 

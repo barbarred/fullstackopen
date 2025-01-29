@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import BlogForm from './components/note-form';
 import Blog from './components/Blog';
 import BlogDetails from './components/BlogDetails';
 import UserDetails from './components/UsersDetails';
+import './styles.css';
 import blogService from './services/blogs';
 import userService from './services/users';
 import {
@@ -24,6 +25,7 @@ import {
   initializeBlogs,
   createBlog,
   updatePost,
+  addComment,
   deletePost,
 } from './reducers/blogsReducer';
 import { saveUser } from './reducers/userReducer';
@@ -87,6 +89,11 @@ const App = () => {
   const updateLikes = async (postUpdated) => {
     const id = postUpdated.id_post;
     dispatch(updatePost(postUpdated, id));
+  };
+  const addComment = async (postUpdated) => {
+    const id = postUpdated.id_post;
+    const comment = postUpdated.comment;
+    dispatch(addComment(comment, id));
   };
 
   const deleteEntrie = async (removePost) => {
@@ -175,43 +182,49 @@ const App = () => {
       </div>
       <div>
         <h2>Blogs</h2>
-        {user ? (
-          <p>
-            {user.username} logged in{' '}
-            <button onClick={closeLogin}>logout</button>
-          </p>
-        ) : null}
+        <div className="nav-bar">
+          <div className="links">
+            <p>
+              <Link to="/users">users</Link>
+            </p>
+            <p>
+              <Link to="/">blogs</Link>
+            </p>
+          </div>
+          <div>
+            {user ? (
+              <p>
+                {user.username} logged in{' '}
+                <button onClick={closeLogin}>logout</button>
+              </p>
+            ) : null}
+          </div>
+        </div>
       </div>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <HomeViwe
-                user={user}
-                loginForm={loginForm}
-                blogsForm={blogsForm}
-              />
-            }
-          />
-          <Route path="/users" element={<UserDetails users={users} />} />
-          <Route
-            path="/users/:id"
-            element={<User users={users} blogs={sortedBlogs} />}
-          />
-          <Route
-            path="/blogs/:id"
-            element={
-              <BlogDetails
-                user={user}
-                blogs={sortedBlogs}
-                updatePost={updateLikes}
-                deletePost={deleteEntrie}
-              />
-            }
-          />
-        </Routes>
-      </Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomeViwe user={user} loginForm={loginForm} blogsForm={blogsForm} />
+          }
+        />
+        <Route path="/users" element={<UserDetails users={users} />} />
+        <Route
+          path="/users/:id"
+          element={<User users={users} blogs={sortedBlogs} />}
+        />
+        <Route
+          path="/blogs/:id"
+          element={
+            <BlogDetails
+              user={user}
+              blogs={sortedBlogs}
+              updatePost={updateLikes}
+              deletePost={deleteEntrie}
+            />
+          }
+        />
+      </Routes>
     </>
   );
 };

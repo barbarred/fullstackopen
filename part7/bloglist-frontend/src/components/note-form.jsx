@@ -6,6 +6,8 @@ const BlogForm = ({ createBlog }) => {
   const [url, setUrl] = useState('');
   const [likes, setLikes] = useState('');
 
+  const commentsTest = ['comment 1', 'comment 2', 'comment 3'];
+
   const addBlog = (event) => {
     event.preventDefault();
     createBlog({
@@ -13,6 +15,7 @@ const BlogForm = ({ createBlog }) => {
       author: author,
       url: url,
       likes: likes,
+      comments: commentsTest,
     });
     setTitle('');
     setAuthor('');

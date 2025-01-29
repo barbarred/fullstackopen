@@ -43,6 +43,14 @@ const BlogDetails = ({ blogs, updatePost, deletePost, user }) => {
         </p>
         <p>added by {blog.user.username}</p>
         <div>
+          <h2>Comments</h2>
+          <ul>
+            {blog.comments?.map((comment, index) => (
+              <li key={index}>{comment}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
           {viewBtn ? (
             <button onClick={handleDelete} data-testid="removeBtn">
               remove
