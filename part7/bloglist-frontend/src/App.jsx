@@ -90,10 +90,8 @@ const App = () => {
     const id = postUpdated.id_post;
     dispatch(updatePost(postUpdated, id));
   };
-  const addComment = async (postUpdated) => {
-    const id = postUpdated.id_post;
-    const comment = postUpdated.comment;
-    dispatch(addComment(comment, id));
+  const setComment = async (id, comment) => {
+    dispatch(addComment(id, comment));
   };
 
   const deleteEntrie = async (removePost) => {
@@ -221,6 +219,7 @@ const App = () => {
               blogs={sortedBlogs}
               updatePost={updateLikes}
               deletePost={deleteEntrie}
+              setComm={setComment}
             />
           }
         />
