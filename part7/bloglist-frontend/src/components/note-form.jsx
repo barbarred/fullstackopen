@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Form, Button } from 'react-bootstrap';
 
 const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('');
@@ -23,11 +24,11 @@ const BlogForm = ({ createBlog }) => {
 
   return (
     <div>
-      <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          title
-          <input
+      <h3>create new</h3>
+      <Form onSubmit={addBlog} className="blogForm">
+        <Form.Group>
+          <Form.Label>title:</Form.Label>
+          <Form.Control
             type="text"
             value={title}
             name="Title"
@@ -35,10 +36,10 @@ const BlogForm = ({ createBlog }) => {
             className="title"
             data-testid="title"
           />
-        </div>
-        <div>
-          author
-          <input
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>author:</Form.Label>
+          <Form.Control
             type="text"
             value={author}
             name="Author"
@@ -46,10 +47,10 @@ const BlogForm = ({ createBlog }) => {
             className="author"
             data-testid="author"
           />
-        </div>
-        <div>
-          url
-          <input
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>url:</Form.Label>
+          <Form.Control
             type="url"
             value={url}
             name="Url"
@@ -57,10 +58,10 @@ const BlogForm = ({ createBlog }) => {
             className="url"
             data-testid="url"
           />
-        </div>
-        <div>
-          likes
-          <input
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>likes:</Form.Label>
+          <Form.Control
             type="num"
             value={likes}
             name="Likes"
@@ -68,11 +69,15 @@ const BlogForm = ({ createBlog }) => {
             className="likes"
             data-testid="likes"
           />
-        </div>
-        <button type="submit" className="btn">
+        </Form.Group>
+        <Button
+          type="submit"
+          variant="outline-primary"
+          className="btn mt-3 mb-3"
+        >
           create
-        </button>
-      </form>
+        </Button>
+      </Form>
     </div>
   );
 };

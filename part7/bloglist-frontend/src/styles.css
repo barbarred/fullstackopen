@@ -1,11 +1,36 @@
+.nav-bar.container{
+   width: 100%;
+}
 .nav-bar {
+    width: 80%;
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 }
-.links {
+.nav-links{
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
-.links p {
-    margin-right: 8px;
+.nav-links p{
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+.nav-links p a{
+    text-decoration: none;
+    color: black;
+}
+.login-form{
+    width: 50%;
+    margin-top: 50px;
+}
+.blogTable a{
+    text-decoration: none;
+}
+.blogForm{
+    width: 50%;
+    margin-top: 50px;
+}
+.userbadge{
+    color: black;
 }

@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Card, Button } from 'react-bootstrap';
 
 const BlogDetails = ({ blogs, updatePost, deletePost, user, setComm }) => {
   const [viewBtn, setViewBtn] = useState(false);
@@ -43,13 +44,26 @@ const BlogDetails = ({ blogs, updatePost, deletePost, user, setComm }) => {
   return (
     <>
       <section>
-        <h1>{blog?.title}</h1>
-        <p>{blog?.url}</p>
-        <p>
-          {blog?.likes} <button onClick={updateLikes}>Like</button>
-        </p>
-        <p>added by {blog?.user.username}</p>
-        <div>
+        <Card className="text-center">
+          <Card.Header>
+            <h3>{blog?.title}</h3>
+          </Card.Header>
+          <Card.Body>
+            <Card.Title>
+              <p>{blog?.url}</p>
+            </Card.Title>
+            <p>
+              {blog?.likes}{' '}
+              <Button variant="success" size="sm" onClick={updateLikes}>
+                Like
+              </Button>
+            </p>
+          </Card.Body>
+          <Card.Footer className="text-muted">
+            <p>added by {blog?.user.username}</p>
+          </Card.Footer>
+        </Card>
+        <div className="mt-3">
           <h2>Comments</h2>
           <input
             type="text"

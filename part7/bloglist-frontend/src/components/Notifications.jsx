@@ -1,20 +1,20 @@
 import { useSelector } from 'react-redux';
-import './Notifications.css';
+import { Alert } from 'react-bootstrap';
 
 export function SuccessNotification() {
   const successMsj = useSelector((state) => state.notification.successMessage);
   if (successMsj === '') return;
-  return <h3 className="successNotification">{successMsj}</h3>;
+  return <Alert variant="success">{successMsj}</Alert>;
 }
 
 export function ErrorLogin() {
   const errorMsj = useSelector((state) => state.notification.errorMessage);
   if (errorMsj === '') return;
-  return <h3 className="errorNotification">{errorMsj}</h3>;
+  return <Alert variant="danger">{errorMsj}</Alert>;
 }
 
 export function RemoveNotification() {
   const removeMsj = useSelector((state) => state.notification.errorRemove);
   if (removeMsj === '') return;
-  return <h3 className="errorNotification">{removeMsj}</h3>;
+  return <Alert variant="danger">{removeMsj}</Alert>;
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
+import { Form, Button, Badge } from 'react-bootstrap';
 import BlogForm from './components/note-form';
 import Blog from './components/Blog';
 import BlogDetails from './components/BlogDetails';
@@ -30,7 +31,7 @@ import {
 } from './reducers/blogsReducer';
 import { saveUser } from './reducers/userReducer';
 import { setUser, closeSession } from './reducers/userReducer';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const HomeViwe = ({ user, loginForm, blogsForm }) => {
   return <>{user === null ? loginForm() : blogsForm()}</>;
@@ -43,6 +44,7 @@ const App = () => {
   const blogFormRef = useRef();
   const dispatch = useDispatch();
   const id = useParams().id;
+  const navigate = useNavigate();
 
   const user = useSelector((state) => {
     return state.user;
@@ -124,32 +126,35 @@ const App = () => {
     dispatch(closeSession());
     setUsername('');
     setPassword('');
+    navigate('/');
   };
 
   const loginForm = () => (
-    <form onSubmit={handleLogin} data-testid="loginForm">
-      <div>
-        username
-        <input
+    <Form onSubmit={handleLogin} data-testid="loginForm" className="login-form">
+      <Form.Group>
+        <Form.Label>Username:</Form.Label>
+        <Form.Control
           type="text"
           value={username}
           name="Username"
           onChange={({ target }) => setUsername(target.value)}
           data-testid="username"
         />
-      </div>
-      <div>
-        password
-        <input
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Password:</Form.Label>
+        <Form.Control
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
           data-testid="password"
         />
-      </div>
-      <button type="submit">Login</button>
-    </form>
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Login{' '}
+      </Button>
+    </Form>
   );
 
   const blogsForm = () => {
@@ -173,57 +178,68 @@ const App = () => {
 
   return (
     <>
-      <div>
+      <div className="container mt-5 main-container">
         <SuccessNotification />
         <ErrorLogin />
         <RemoveNotification />
-      </div>
-      <div>
-        <h2>Blogs</h2>
-        <div className="nav-bar">
-          <div className="links">
-            <p>
-              <Link to="/users">users</Link>
-            </p>
-            <p>
-              <Link to="/">blogs</Link>
-            </p>
-          </div>
-          <div>
-            {user ? (
+        <div className="nav-bar-container mb-5">
+          <div className="nav-bar">
+            <div className="logo">
+              <h2>BlogsApp</h2>
+            </div>
+            <div className="nav-links">
               <p>
-                {user.username} logged in{' '}
-                <button onClick={closeLogin}>logout</button>
+                <Link to="/users">Users</Link>
               </p>
-            ) : null}
+              <p>
+                <Link to="/">Blogs</Link>
+              </p>
+            </div>
+            <div className="user-info">
+              {user ? (
+                <p>
+                  <Badge bg="warning" className="userbadge">
+                    {user.username}
+                  </Badge>{' '}
+                  logged in{' '}
+                  <Button variant="outline-danger" onClick={closeLogin}>
+                    logout
+                  </Button>
+                </p>
+              ) : null}
+            </div>
           </div>
         </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomeViwe
+                user={user}
+                loginForm={loginForm}
+                blogsForm={blogsForm}
+              />
+            }
+          />
+          <Route path="/users" element={<UserDetails users={users} />} />
+          <Route
+            path="/users/:id"
+            element={<User users={users} blogs={sortedBlogs} />}
+          />
+          <Route
+            path="/blogs/:id"
+            element={
+              <BlogDetails
+                user={user}
+                blogs={sortedBlogs}
+                updatePost={updateLikes}
+                deletePost={deleteEntrie}
+                setComm={setComment}
+              />
+            }
+          />
+        </Routes>
       </div>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomeViwe user={user} loginForm={loginForm} blogsForm={blogsForm} />
-          }
-        />
-        <Route path="/users" element={<UserDetails users={users} />} />
-        <Route
-          path="/users/:id"
-          element={<User users={users} blogs={sortedBlogs} />}
-        />
-        <Route
-          path="/blogs/:id"
-          element={
-            <BlogDetails
-              user={user}
-              blogs={sortedBlogs}
-              updatePost={updateLikes}
-              deletePost={deleteEntrie}
-              setComm={setComment}
-            />
-          }
-        />
-      </Routes>
     </>
   );
 };
