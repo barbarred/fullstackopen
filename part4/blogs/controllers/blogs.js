@@ -21,7 +21,8 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: user.id
+    user: user.id,
+    comments: body.comments
   })
   if(blog.likes){
     const savedBlog = await blog.save()
@@ -36,6 +37,14 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   }else{
     response.status(400).json('somes keys are missing')
   }
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const body = request.body
+  const blog = await Blog.findById(request.params.id)
+  blog.comments = blog.comments.concat(body.comment)
+  const savedBlog = await blog.save()
+  response.status(201).json(savedBlog)
 })
 
 blogsRouter.put('/:id', async (request, response) => {

@@ -9,7 +9,6 @@ const loginRouter = require('./controllers/login.js')
 const logger = require('./utils/logger.js')
 const mongoose = require('mongoose')
 const middleware = require('./utils/middleware.js')
-const { process_params } = require('express/lib/router/index.js')
 
 mongoose.set('strictQuery', false)
 
