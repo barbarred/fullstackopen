@@ -63,32 +63,40 @@ const BlogDetails = ({ blogs, updatePost, deletePost, user, setComm }) => {
             <p>added by {blog?.user.username}</p>
           </Card.Footer>
         </Card>
-        <div className="mt-3">
-          <h2>Comments</h2>
-          <input
-            type="text"
-            onChange={(event) => setComment(event.target.value)}
-          />
-          <form onSubmit={handleAddComment}>
-            <button type="submit">add comment</button>
-            <ul>
+        <Card className="mt-4">
+          <Card.Header className="text-center">
+            {' '}
+            <h3>Comments</h3>{' '}
+          </Card.Header>
+          <Card.Body>
+            <blockquote className="blockquote mb-0">
               {blog?.comments.map((comment, index) => (
-                <li key={index}>
+                <footer key={index} className="blockquote-footer">
                   {typeof comment === 'object' ? comment.text : comment}
-                </li>
+                </footer>
               ))}
-            </ul>
-          </form>
-        </div>
-        <div>
-          {viewBtn ? (
-            <button onClick={handleDelete} data-testid="removeBtn">
-              remove
-            </button>
-          ) : (
-            ''
-          )}
-        </div>
+            </blockquote>
+            <input
+              className="mt-4"
+              type="text"
+              onChange={(event) => setComment(event.target.value)}
+            />
+            <form onSubmit={handleAddComment} className="mt-2">
+              <Button variant="secondary" type="submit" size="sm">
+                add comment
+              </Button>
+            </form>
+            <div>
+              {viewBtn ? (
+                <button onClick={handleDelete} data-testid="removeBtn">
+                  remove
+                </button>
+              ) : (
+                ''
+              )}
+            </div>
+          </Card.Body>
+        </Card>
       </section>
     </>
   );

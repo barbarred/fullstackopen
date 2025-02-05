@@ -1,4 +1,6 @@
 import { useParams } from 'react-router-dom';
+import { Card, ListGroup, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const User = ({ users, blogs }) => {
   const id = useParams().id;
@@ -10,21 +12,31 @@ const User = ({ users, blogs }) => {
   );
   return (
     <>
-      <div>
-        <div>
-          <h1>{user.username}</h1>
-          <h2>added blogs</h2>
+      <Card style={{ width: '18rem' }}>
+        <Card.Body>
+          <Card.Title>{user?.username}</Card.Title>
+        </Card.Body>
+        <Card.Body>
+          <Card.Text>added blogs:</Card.Text>
+        </Card.Body>
+        <ListGroup variant="flush">
           {userBlogs.length > 0 ? (
-            <ul>
-              {userBlogs.map((blog) => (
-                <li key={blog.id}>{blog.title}</li>
-              ))}
-            </ul>
+            userBlogs.map((blog) => (
+              <ListGroup.Item key={blog.id} className="blog-list">
+                {' '}
+                {blog.title}
+                <Link to={`/blogs/${blog.id}`} data-testid="blogLink">
+                  <Button size="sm" variant="outline-info">
+                    see
+                  </Button>{' '}
+                </Link>
+              </ListGroup.Item>
+            ))
           ) : (
-            <p>No blogs added</p>
+            <ListGroup.Item>No blogs added</ListGroup.Item>
           )}
-        </div>
-      </div>
+        </ListGroup>
+      </Card>
     </>
   );
 };

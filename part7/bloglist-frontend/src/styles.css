@@ -34,3 +34,20 @@
 .userbadge{
     color: black;
 }
+.user-header-details{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.fw-bold a{
+    text-decoration: none;
+}
+.blog-list{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    font-style: italic;
+}
