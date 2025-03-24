@@ -158,19 +158,19 @@ const typeDefs = `
 `
 
 const resolvers = {
-  Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
-    allBooks: (_, args) => {
+  Query:  {
+    bookCount: async () => Book.collection.countDocuments(),
+    authorCount: async () => Author.collection.countDocuments(),
+    allBooks: async (_, args) => {
       if(args.author){
         return books.filter(book => book.author === args.author)
       }
       if(args.genre){
-        return books.filter(book => book.genres.includes(args.genre))
+        return Book.find({ genres: { $in: [args.genre] } })
       }
-      return books
+      return Book.find({})
     },
-    allAuthors: () => authors,
+    allAuthors: async () => Author.find({})
   },
   Author: {
     bookCount: (root) => books.filter(book => book.author === root.name).length
