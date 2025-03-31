@@ -19,7 +19,11 @@ const ALL_BOOKS = gql`
   query {
     allBooks {
       title
-      author
+      author {
+        name
+        born
+        bookCount
+      }
       published
     }
   }
@@ -67,13 +71,8 @@ const App = () => {
     refetchQueries: [{ query: ALL_AUTHORS }]
   });
 
-  if (authors.loading)  {
-    return <div>loading...</div>
-  }
-  if (books.loading)  {
-    return <div>loading...</div>
-  }
-
+  if (authors.loading) return <p>Cargando...</p>;
+  if (authors.error) return <p>Error: {authors.error.message}</p>;
 
   return (
     <div>
