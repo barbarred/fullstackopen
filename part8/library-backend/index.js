@@ -154,9 +154,9 @@ const typeDefs = `
   }
   type Mutation {
     addBook(
-      title: String!
-      author: String!
-      published: Int!
+      title: String!,
+      author: String!,
+      published: Int!,
       genres: [String!]!
     ): Book,
     editAuthor(name: String!, setBornTo: Int!): Author,
@@ -217,7 +217,12 @@ const resolvers = {
       if(author){
         const book = new Book({ ...args, author: author._id, id: uuidv4() })
         await book.save()
-        return book
+        return {
+          ...book.toObject(),
+          author: {
+            name: author.name,
+          },
+        };
       }
       try{
         const author = new Author({ name: args.author, born: null, id: uuidv4() })

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
-const NewBook = ({addBook, show}) => {
+const NewBook = ({show, addBook, setPage}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
-  const [published, setPublished] = useState('')
+  const [year, setYear] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
@@ -11,16 +11,19 @@ const NewBook = ({addBook, show}) => {
     return null
   }
 
+  
   const submit = async (event) => {
     event.preventDefault()
 
-    addBook({ variables: { title, author, published: parseInt(published), genres } })
+    addBook({ variables: { title, author, published: parseInt(year), genres } })
 
     setTitle('')
-    setPublished('')
+    setYear('')
     setAuthor('')
     setGenres([])
     setGenre('')
+    setPage('books')
+    
   }
 
   const addGenre = () => {
@@ -48,9 +51,9 @@ const NewBook = ({addBook, show}) => {
         <div>
           published
           <input
-            type="number"
-            value={published}
-            onChange={({ target }) => setPublished(target.value)}
+            type='number'
+            value={year}
+            onChange={({ target }) => setYear(target.value)}
           />
         </div>
         <div>
