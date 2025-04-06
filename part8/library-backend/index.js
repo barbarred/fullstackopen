@@ -132,6 +132,7 @@ const typeDefs = `
   }
   type Token {
     value: String!
+    user: User!
   }
   type Author {
     name: String!
@@ -257,7 +258,7 @@ const resolvers = {
       return author
     },
     createUser: async (root, args) => {
-      const user = new User({ username: args.username })
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
   
       return user.save()
         .catch(error => {
@@ -286,7 +287,7 @@ const resolvers = {
         id: user._id,
       }
   
-      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+      return { value: jwt.sign(userForToken, process.env.JWT_SECRET), user: user }
     },
   }
 }

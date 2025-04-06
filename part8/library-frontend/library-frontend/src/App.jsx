@@ -4,6 +4,7 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 import { gql, useQuery, useMutation, useApolloClient } from '@apollo/client';
+import Recommend from "./components/Recommend";
 
 
 const ALL_AUTHORS = gql`
@@ -65,6 +66,10 @@ const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password)  {
       value
+      user{
+        username
+        favoriteGenre
+      }
     }
   }
 `
@@ -76,11 +81,14 @@ const App = () => {
   const authors = useQuery(ALL_AUTHORS);
   const books = useQuery(ALL_BOOKS);
   const client = useApolloClient()
-  const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }],
-    onError: (error) => {
-      console.log(error)
-    }
+  const [addBook] = useMutation(ADD_BOOK,{
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_BOOKS}, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(response.data.addBook),
+        }
+      })
+    },
   });
   const [setBorn] = useMutation(SET_BORN, {
     refetchQueries: [{ query: ALL_AUTHORS }]
@@ -100,6 +108,7 @@ const App = () => {
         <button onClick={() => setPage("authors")}>authors</button>
         <button onClick={() => setPage("books")}>books</button>
         {token && <button onClick={() => setPage("add")}>add book</button> }
+        {token && <button onClick={() => setPage("recommend")}>recommend</button>}
         {token && <button onClick={logout}>logout</button>}
         {!token && <button onClick={() => setPage("login")}>login</button>}
       </div>
@@ -113,6 +122,8 @@ const App = () => {
       )}
 
       <NewBook show={page === "add"} addBook={addBook} setPage={setPage}/>
+
+      { books.data && <Recommend show={page === "recommend"} books={books.data.allBooks} token={token}/>}
 
       {!token && <LoginForm show={page === "login"} setToken={setToken} LOGIN={LOGIN} setPage={setPage}/>}
       

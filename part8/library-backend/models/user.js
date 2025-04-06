@@ -8,6 +8,9 @@ const userSchema = new Schema({
         unique: true,
         minlength: 3
     },
+    favoriteGenre: {
+        type: String
+    }
 })
 
 export default mongoose.model('User', userSchema)

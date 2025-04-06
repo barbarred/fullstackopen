@@ -18,6 +18,8 @@ const LoginForm = ({ setError, setToken, show, LOGIN, setPage}) => {
       setToken(token)
       setPage('authors')
       localStorage.setItem('phonenumbers-user-token', token)
+      const user = result.data.login.user
+      localStorage.setItem('loggedUser', JSON.stringify(user))
     }
   }, [result.data]) // eslint-disable-line
 

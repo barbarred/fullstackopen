@@ -28,7 +28,6 @@ const Books = ({books, show}) => {
   if (!show) {
     return null
   }
-  console.log(genres)
   return (
     <div>
       <h2>books</h2>
