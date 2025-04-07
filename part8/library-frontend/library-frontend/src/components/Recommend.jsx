@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react'
 
-const Recommend = ({books, show}) => {
+const Recommend = ({books, show, user}) => {
     const [userBooksByGenr, setUserBooksByGenr] = useState([])
-    const [user, setUser] = useState(null)
-
-    useEffect(() => {
-        const user = localStorage.getItem('loggedUser')
-        setUser(JSON.parse(user))
-    },[])
 
     useEffect(() => {
         if(user && books) {

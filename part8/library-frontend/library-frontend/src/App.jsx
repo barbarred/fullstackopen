@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
@@ -77,10 +77,20 @@ const LOGIN = gql`
 
 const App = () => {
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [page, setPage] = useState("authors");
   const authors = useQuery(ALL_AUTHORS);
   const books = useQuery(ALL_BOOKS);
-  const client = useApolloClient()
+  const client = useApolloClient();
+
+  // Verificar si hay un token en localStorage al cargar la aplicación
+  useEffect(() => {
+    const savedToken = localStorage.getItem("phonenumbers-user-token");
+    if (savedToken) {
+      setToken(savedToken);
+    }
+  }, []);
+
   const [addBook] = useMutation(ADD_BOOK,{
     update: (cache, response) => {
       cache.updateQuery({ query: ALL_BOOKS}, ({ allBooks }) => {
@@ -102,6 +112,12 @@ const App = () => {
     client.resetStore()
     setPage("authors");
   }
+
+  const handleLogin = (newToken) => {
+    setToken(newToken);
+    localStorage.setItem("library-user-token", newToken);
+  }
+  
   return (
     <div>
       <div>
@@ -123,9 +139,9 @@ const App = () => {
 
       <NewBook show={page === "add"} addBook={addBook} setPage={setPage}/>
 
-      { books.data && <Recommend show={page === "recommend"} books={books.data.allBooks} token={token}/>}
+      { books.data && <Recommend show={page === "recommend"} books={books.data.allBooks} user={user}/>}
 
-      {!token && <LoginForm show={page === "login"} setToken={setToken} LOGIN={LOGIN} setPage={setPage}/>}
+      {!token && <LoginForm show={page === "login"} setToken={handleLogin} LOGIN={LOGIN} setPage={setPage} setUser={setUser} />}
       
     </div>
   );
