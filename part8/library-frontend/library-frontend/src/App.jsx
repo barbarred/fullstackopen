@@ -73,7 +73,18 @@ const LOGIN = gql`
     }
   }
 `
-
+const BOOKS_BY_GENRE = gql`
+  query booksByGenre($genre: String!) {
+    booksByGenre(genre: $genre) {
+      title
+      author {
+        name
+      }
+      published
+      genres
+    }
+  }
+`;
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -91,15 +102,33 @@ const App = () => {
     }
   }, []);
 
-  const [addBook] = useMutation(ADD_BOOK,{
+  const [addBook] = useMutation(ADD_BOOK, {
     update: (cache, response) => {
-      cache.updateQuery({ query: ALL_BOOKS}, ({ allBooks }) => {
+      const addedBook = response.data.addBook;
+
+      // Actualizar la caché de ALL_BOOKS
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
         return {
-          allBooks: allBooks.concat(response.data.addBook),
-        }
-      })
+          allBooks: allBooks.concat(addedBook),
+        };
+      });
+
+      // Actualizar la caché de BOOKS_BY_GENRE para cada género del libro agregado
+      addedBook.genres.forEach((genre) => {
+        cache.updateQuery(
+          { query: BOOKS_BY_GENRE, variables: { genre } },
+          (data) => {
+            if (data) {
+              return {
+                booksByGenre: data.booksByGenre.concat(addedBook),
+              };
+            }
+          }
+        );
+      });
     },
   });
+
   const [setBorn] = useMutation(SET_BORN, {
     refetchQueries: [{ query: ALL_AUTHORS }]
   });
@@ -134,7 +163,7 @@ const App = () => {
       )}
 
       {books.data && (
-        <Books show={page === "books"} books={books.data.allBooks}/>
+        <Books show={page === "books"} books={books.data.allBooks} BOOKS_BY_GENRE={BOOKS_BY_GENRE}/>
       )}
 
       <NewBook show={page === "add"} addBook={addBook} setPage={setPage}/>
