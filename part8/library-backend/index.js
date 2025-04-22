@@ -1,5 +1,12 @@
 import { ApolloServer } from '@apollo/server'
-import { startStandaloneServer } from '@apollo/server/standalone'
+import { expressMiddleware } from '@apollo/server/express4';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { WebSocketServer } from 'ws';
+import { useServer as useWsServer } from 'graphql-ws/lib/use/ws';
+import { createServer } from 'http';
+import express from 'express';
+import cors from 'cors';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import mongoose from 'mongoose'
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
@@ -8,10 +15,13 @@ import Author from './models/authors.js';
 import User from './models/user.js';
 import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken'
+import { PubSub } from 'graphql-subscriptions';
 
-
-mongoose.set('strictQuery', false)
 dotenv.config()
+
+const pubsub = new PubSub();
+
+mongoose.set('strictQuery', false);
 
 const MONGODB_URI = process.env.MONGODB_URI
 
@@ -125,6 +135,9 @@ let books = [
 */
 
 const typeDefs = `
+  type Subscription {
+    bookAdded: Book!
+  }
   type User {
   username: String!
   favoriteGenre: String!
@@ -222,6 +235,7 @@ const resolvers = {
       if(author){
         const book = new Book({ ...args, author: author._id, id: uuidv4() })
         await book.save()
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
         return {
           ...book.toObject(),
           author: {
@@ -293,27 +307,66 @@ const resolvers = {
   
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET), user: user }
     },
-  }
-}
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-})
-
-startStandaloneServer(server, {
-  listen: { port: 4000 },
-  context: async ({ req, res }) => {
-    const auth = req ? req.headers.authorization : null
-    if (auth && auth.startsWith('Bearer ')) {
-      const decodedToken = jwt.verify(
-        auth.substring(7), process.env.JWT_SECRET
-      )
-      const currentUser = await User
-        .findById(decodedToken.id)
-      return { currentUser }
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
     }
   },
-}).then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
+}
+
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+const app = express();
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
+const httpServer = createServer(app);
+
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
+});
+
+useWsServer({ schema }, wsServer);
+
+const server = new ApolloServer({
+  schema,
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+  ],
+});
+
+await server.start();
+
+app.use(
+  '/graphql',
+  express.json(),
+  expressMiddleware(server, {
+    context: async ({ req }) => {
+      const auth = req.headers.authorization || '';
+      if (auth.startsWith('Bearer ')) {
+        try {
+          const decodedToken = jwt.verify(
+            auth.substring(7),
+            process.env.JWT_SECRET
+          );
+          const currentUser = await User.findById(decodedToken.id)
+          return { currentUser };
+        } catch (error) {
+          return {};
+        }
+      }
+      return {};
+    },
+  })
+);
+
+const PORT = 4000;
+httpServer.listen(PORT, () => {
+  console.log(`Servidor listo en http://localhost:${PORT}/graphql`);
+  console.log(`Suscripciones listas en ws://localhost:${PORT}/graphql`);
+});

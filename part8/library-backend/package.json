@@ -10,11 +10,17 @@
   "author": "rorridev",
   "license": "ISC",
   "dependencies": {
-    "@apollo/server": "^4.11.3",
-    "dotenv": "^16.4.7",
-    "graphql": "^16.10.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.12.2",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "@apollo/server": "^4.x",
+    "@graphql-tools/schema": "^10.x",
+    "cors": "^2.8.5",
+    "dotenv": "^16.x",
+    "express": "^4.x",
+    "graphql": "^16.x",
+    "graphql-subscriptions": "^2.x",
+    "graphql-ws": "^5.x",
+    "jsonwebtoken": "^9.x",
+    "mongoose": "^8.x",
+    "ws": "^8.x"
   }
 }
