@@ -1,11 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
-import { gql, useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { gql, useQuery, useMutation, useApolloClient, useSubscription } from '@apollo/client';
 import Recommend from "./components/Recommend";
 
+
+const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      title
+      author {
+        name
+        __typename
+      }
+      id
+      genres
+      published
+      __typename
+    }
+  }
+`;
 
 const ALL_AUTHORS = gql`
   query {
@@ -23,9 +39,12 @@ const ALL_BOOKS = gql`
       title
       author {
         name
+        __typename
       }
       published
       genres
+      id
+      __typename
     }
   }
 `;
@@ -87,47 +106,47 @@ const BOOKS_BY_GENRE = gql`
 `;
 
 const App = () => {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('library-user-token'));
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("authors");
   const authors = useQuery(ALL_AUTHORS);
   const books = useQuery(ALL_BOOKS);
   const client = useApolloClient();
-
-  // Verificar si hay un token en localStorage al cargar la aplicación
-  useEffect(() => {
-    const savedToken = localStorage.getItem("phonenumbers-user-token");
-    if (savedToken) {
-      setToken(savedToken);
-    }
-  }, []);
-
-  const [addBook] = useMutation(ADD_BOOK, {
-    update: (cache, response) => {
-      const addedBook = response.data.addBook;
-
-      // Actualizar la caché de ALL_BOOKS
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        return {
-          allBooks: allBooks.concat(addedBook),
-        };
-      });
-
-      // Actualizar la caché de BOOKS_BY_GENRE para cada género del libro agregado
-      addedBook.genres.forEach((genre) => {
-        cache.updateQuery(
-          { query: BOOKS_BY_GENRE, variables: { genre } },
-          (data) => {
-            if (data) {
-              return {
-                booksByGenre: data.booksByGenre.concat(addedBook),
-              };
-            }
-          }
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded;
+      if (!addedBook) {
+        return;
+      }
+      window.alert(`New book added: ${addedBook.title} by ${addedBook.author.name}`);
+      const existingData = client.readQuery({ query: ALL_BOOKS });
+      if (existingData && existingData.allBooks) {
+        const bookAlreadyInCache = existingData.allBooks.find(
+          (book) => book.id === addedBook.id
         );
-      });
+  
+        if (!bookAlreadyInCache) {
+          client.writeQuery({
+            query: ALL_BOOKS,
+            data: {
+              allBooks: [...existingData.allBooks, addedBook],
+            },
+          });
+          console.log('Caché actualizada.');
+        } else {
+          console.log('El libro ya estaba en la caché de ALL_BOOKS.');
+        }
+      } else {
+         console.log('No se encontraron datos existentes en caché para ALL_BOOKS.');
+      }
     },
+    onError: (error) => {
+      console.error("Error en la suscripción BOOK_ADDED:", error);
+    },
+    skip: !token,
   });
+
+  const [addBook] = useMutation(ADD_BOOK);
 
   const [setBorn] = useMutation(SET_BORN, {
     refetchQueries: [{ query: ALL_AUTHORS }]
@@ -141,12 +160,11 @@ const App = () => {
     client.resetStore()
     setPage("authors");
   }
-
+  
   const handleLogin = (newToken) => {
     setToken(newToken);
     localStorage.setItem("library-user-token", newToken);
   }
-  
   return (
     <div>
       <div>

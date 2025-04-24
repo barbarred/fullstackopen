@@ -232,26 +232,32 @@ const resolvers = {
           }
         })
       const author = await Author.findOne({ name: args.author })
-      if(author){
-        const book = new Book({ ...args, author: author._id, id: uuidv4() })
-        await book.save()
-        pubsub.publish('BOOK_ADDED', { bookAdded: book })
-        return {
-          ...book.toObject(),
-          author: {
-            name: author.name,
-          },
-        };
-      }
-      try{
-        const author = new Author({ name: args.author, born: null, id: uuidv4() })
-        await author.save()
-        const book = new Book({ ...args, author: author._id, id: uuidv4() })
-        await book.save()
-        return book
-      }
-      catch(error){
-        console.log(error)
+      try {
+
+        if (!author || !author._id) {
+           throw new Error("Author could not be found or created properly.");
+        }
+      
+        const book = new Book({ ...args, author: author._id, id: uuidv4() });
+        await book.save();
+      
+        const bookToPublish = await Book.findById(book._id).populate('author');
+      
+        if (!bookToPublish || !bookToPublish.author || !bookToPublish.author.name) {
+            throw new GraphQLError('Failed to prepare book data for subscription publish', {
+               extensions: { code: 'INTERNAL_SERVER_ERROR' }
+            });
+        }
+        pubsub.publish('BOOK_ADDED', { bookAdded: bookToPublish }); 
+        return bookToPublish;
+      
+      } catch (error) {
+        if (error instanceof GraphQLError) {
+          throw error;
+        }
+        throw new GraphQLError('Failed to add book', {
+            extensions: { code: 'INTERNAL_SERVER_ERROR', originalError: error.message }
+        });
       }
     },
     editAuthor: async (_, args, context) => {

@@ -11,7 +11,6 @@ const NewBook = ({show, addBook, setPage}) => {
     return null
   }
 
-  
   const submit = async (event) => {
     event.preventDefault()
 

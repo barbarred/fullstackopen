@@ -17,7 +17,7 @@ const LoginForm = ({ setError, setToken, show, LOGIN, setPage, setUser}) => {
       const token = result.data.login.value
       setToken(token)
       setPage('authors')
-      localStorage.setItem('phonenumbers-user-token', token)
+      localStorage.setItem('library-user-token', token)
       const user = result.data.login.user
       setUser(user)
       localStorage.setItem('loggedUser', JSON.stringify(user))

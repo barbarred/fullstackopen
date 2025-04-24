@@ -1,41 +1,42 @@
 import { useLazyQuery } from '@apollo/client';
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const Books = ({books, show, BOOKS_BY_GENRE}) => {
+const Books = ({ books, show, BOOKS_BY_GENRE }) => {
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState(null);
-  const [filteredBooks, setFilteredBooks] = useState(books);
-  const [getBooksByGenre, { data, loading }] = useLazyQuery(BOOKS_BY_GENRE);
-  
+  const [getBooksByGenre, { data: filteredData, loading: filterLoading }] = useLazyQuery(BOOKS_BY_GENRE);
+
   useEffect(() => {
     const allGenres = books.flatMap(book => book.genres);
     const uniqueGenres = [...new Set(allGenres)];
     setGenres(uniqueGenres);
   }, [books]);
 
-  useEffect(() => {
-    if (data && data.booksByGenre) {
-      setFilteredBooks(data.booksByGenre);
-    }
-  }, [data]);
 
   const handleGenreClick = (genre) => {
     setSelectedGenre(genre);
     getBooksByGenre({ variables: { genre } });
   };
+
   const showAllBooks = () => {
     setSelectedGenre(null);
-    setFilteredBooks(books);
   };
 
   if (!show) {
-    return null
+    return null;
   }
+  let booksToDisplay = [];
+  if (selectedGenre) {
+    booksToDisplay = filteredData?.booksByGenre || [];
+  } else {
+    booksToDisplay = books;
+  }
+
   return (
     <div>
       <h2>books</h2>
-      {loading && <p>Loading...</p>}
+      {filterLoading && <p>Loading filtered books...</p>}
       in genre <strong>{selectedGenre || 'all'}</strong>
       <table>
         <tbody>
@@ -44,8 +45,8 @@ const Books = ({books, show, BOOKS_BY_GENRE}) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBooks.map((a) => (
-            <tr key={a.title}>
+          {booksToDisplay.map((a) => (
+            <tr key={a.id}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
               <td>{a.published}</td>
@@ -54,34 +55,38 @@ const Books = ({books, show, BOOKS_BY_GENRE}) => {
         </tbody>
       </table>
       <div>
-      <button
+        <button
           onClick={showAllBooks}
           style={{
             margin: '5px',
-            backgroundColor: selectedGenre === null ? '#4CAF50' : '#f8f9fa'
+            backgroundColor: selectedGenre === null ? '#4CAF50' : '#f8f9fa',
           }}
+          disabled={filterLoading}
         >
           all
         </button>
-        {genres.map(genre => (
+        {genres.map((genre) => (
           <button
             key={genre}
             onClick={() => handleGenreClick(genre)}
             style={{
               margin: '5px',
-              backgroundColor: selectedGenre === genre ? '#4CAF50' : '#f8f9fa'
+              backgroundColor: selectedGenre === genre ? '#4CAF50' : '#f8f9fa',
             }}
+            disabled={filterLoading}
           >
             {genre}
           </button>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
+
 Books.propTypes = {
   books: PropTypes.arrayOf(
     PropTypes.shape({
+      id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       author: PropTypes.shape({
         name: PropTypes.string.isRequired,
@@ -91,7 +96,8 @@ Books.propTypes = {
     })
   ).isRequired,
   show: PropTypes.bool.isRequired,
+  BOOKS_BY_GENRE: PropTypes.object.isRequired,
 };
 
-export default Books
+export default Books;
 
